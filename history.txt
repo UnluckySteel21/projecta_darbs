@@ -1,16 +1,18 @@
 Darbs uzsākts 19/10/2023
 Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "_"
 
--v0.1
-    19/10/2023
-    
-    Uzstādīju visus failus, lai varētu veikt darba izstrādi:
-        gitignore;
-        venv;
-        app.py;
-        config.py;
-        README.md fails (pagaidām bez satura)
-        requirments.txt;
-        .env;
+
+19/10/2023
+    -v0.1
+        Uzstādīju visus failus, lai varētu veikt darba izstrādi:
+            gitignore;
+            venv;
+            app.py;
+            config.py;
+            README.md fails (pagaidām bez satura)
+            requirments.txt;
+            .env;
         kā arī izveidoju mapi "templates" ar layout.html failu (sasaistīju ar bootstrap un main_styles.css)
-        tiktāl commitots gitā ar ziņu "-v0.1 it starts"
+        
+    -v0.2
+        Pievienoju AI ģenerētu logo un atradu veido kā likt tam parādīties ekrānā.
