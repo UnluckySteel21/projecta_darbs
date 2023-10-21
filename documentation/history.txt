@@ -16,3 +16,9 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
         
     -v0.2
         Pievienoju AI ģenerētu logo un atradu veido kā likt tam parādīties ekrānā.
+
+21/10/2023
+    -v0.3
+        Uzlaboju sākotnējo failu konfigurāciju.
+        Uzsāku izmantot Blueprints
+        Uzsākta Ielogošanās lapas un reģistrācijas izveida

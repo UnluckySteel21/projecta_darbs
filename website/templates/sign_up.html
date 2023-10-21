@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+
+{% block page_title %}
+Pierakstīšanās
+{% endblock %}
+
+{% block head_inners %}
+{% endblock %}
+
+{% block main_content %}
+<form 
+    method="POST"
+    class="container">
+    <h3 class="text-center"> Piereģistrēties </h3>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="email">Epasta adrese</label>
+                <input 
+                    type="email" 
+                    class="form-control" 
+                    id="email" 
+                    name="email" 
+                    placeholder="Enter email">
+            </div>
+            <div class="form-group">
+                <label for="firstName">Vārds</label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    id="firstName" 
+                    name="firstName" 
+                    placeholder="Ievadi savu vārdu">
+            </div>
+            <div class="form-group">
+                <label for="lasttName">Uzvārds</label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    id="lasttName" 
+                    name="lasttName" 
+                    placeholder="Ievadi savu uzvārdu">
+            </div>
+            <div class="form-group">
+                <label for="password1">Parole</label>
+                <input 
+                    type="password" 
+                    class="form-control" 
+                    id="password1" 
+                    name="password1" 
+                    placeholder="Ievadi savu paroli">
+            </div>
+            <div class="form-group">
+                <label for="password2">Apstiprini paroli</label>
+                <input 
+                    type="password" 
+                    class="form-control" 
+                    id="password2" 
+                    name="password2" 
+                    placeholder="Atkārtoti ievadi savu paroli">
+            </div>
+            <br>
+            <button 
+                type="submit"
+                class="btn btn-primary d-block mx-auto">
+                Iesniegt
+            </button>
+        </div>
+    </div>
+</form>
+{% endblock %}
