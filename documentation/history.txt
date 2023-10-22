@@ -22,3 +22,9 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
         Uzlaboju sākotnējo failu konfigurāciju.
         Uzsāku izmantot Blueprints
         Uzsākta Ielogošanās lapas un reģistrācijas izveida
+
+22/10/2023
+    -v0.4
+        Pabeigta elementu dekorācija un izvietojums sign_up un login lapās
+        fona bilde tiek parādība (iespējams tā jāmaina?)
+        flask pazižojumu (flash) uzstādīšana

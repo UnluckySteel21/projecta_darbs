@@ -1,7 +1,21 @@
 body {
-    background-color: aqua;
+    background-color: lightgray;
+    font-family: cursive;
+    background-image: url('../images/car_logo.png');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
 }
 
-img {
-    height: 150px;
+.btn-close {
+    position: absolute;
+    right: 0;
+}
+
+.centered-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 90vh;
 }
