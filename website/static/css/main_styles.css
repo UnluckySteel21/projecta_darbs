@@ -1,7 +1,7 @@
 body {
     background-color: lightgray;
     font-family: cursive;
-    background-image: url('../images/car_logo.png');
+    /*background-image: url('../images/car_logo.png');*/
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
@@ -17,5 +17,12 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 90vh;
+    height: 70vh;
+}
+
+.centered-content-row {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }

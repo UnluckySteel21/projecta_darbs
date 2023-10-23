@@ -32,6 +32,6 @@ def sign_up():
         else:
             flash('Konts izveidots!', category='succes')
 
-        return render_template("sign_up.html")
+        return render_template("login.html")
     else:
         return render_template("sign_up.html")

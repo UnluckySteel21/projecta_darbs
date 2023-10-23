@@ -1,0 +1,119 @@
+{% extends "layout.html" %}
+
+{% block page_title %}
+Jauns klients
+{% endblock %}
+
+{% block head_inners %}
+{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid">
+    <div class="row">
+        <h3 class="text-center"> Klienta pievienošana </h3>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <form 
+                method="POST"
+                class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="client_name">Klienta vārds</label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="client_name" 
+                                name="client_name" 
+                                placeholder="Ievadi klienta vārdu">
+                        </div>
+                        <div class="form-group">
+                            <label for="client_surname">Klienta uzvārds</label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="client_surname" 
+                                name="client_surname" 
+                                placeholder="Ievadi klienta uzvārdu">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Klienta epasts</label>
+                            <input 
+                                type="email" 
+                                class="form-control" 
+                                id="client_email" 
+                                name="client_email" 
+                                placeholder="Ievadi klienta epastu">
+                        </div>
+                        <div class="form-group">
+                            <label for="client_number">Klienta telefona numurs</label>
+                            <input 
+                                type="number" 
+                                class="form-control" 
+                                id="client_number" 
+                                name="client_number" 
+                                placeholder="Ievadi klienta telefona numuru">
+                        </div>
+                        <div class="form-group">
+                            <label for="car_brand">Ievadi auto marku</label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="car_brand" 
+                                name="car_brand" 
+                                placeholder="Ievadi klienta auto marku">
+                        </div>
+                        <div class="form-group">
+                            <label for="car_make">Ievadi auto modeli</label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="car_make" 
+                                name="car_make" 
+                                placeholder="Ievadi klienta auto modeli">
+                        </div>
+                        <div class="form-group">
+                            <label for="car_number">Ievadi auto numuru</label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="car_number" 
+                                name="car_number" 
+                                placeholder="Ievadi klienta auto numuru">
+                        </div>
+                        <div class="form-group">
+                            <label for="car_vin">Ievadi auto vin numuru</label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="car_vin" 
+                                name="car_vin" 
+                                placeholder="Ievadi klienta auto vin">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="repair_specification">Remontdarba specifikācija</label>
+                <textarea 
+                    class="form-control h-100" 
+                    id="repair_specification" 
+                    name="repair_specification" 
+                    rows="18"
+                    placeholder="Ievadi remontdarba specifikāciju"></textarea>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div>
+        <button 
+            type="submit"
+            class="btn btn-primary d-block mx-auto">
+            Iesniegt
+        </button>
+    </div>
+</div>
+{% endblock %}

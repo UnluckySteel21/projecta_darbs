@@ -28,3 +28,10 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
         Pabeigta elementu dekorācija un izvietojums sign_up un login lapās
         fona bilde tiek parādība (iespējams tā jāmaina?)
         flask pazižojumu (flash) uzstādīšana
+
+23/10/2023
+    -v0.5
+        Izveidota un sasaistīta jauna klienta izveides forma
+        Papildināta ielogošanās un konta izveides loģika ar savstarpēju linkošanu
+        Izkomentēta pagaidu bilde (pēc īstās bildes atrašanas var vienkārši labot kometāru)
+        Izveidots lapas virsraksts
