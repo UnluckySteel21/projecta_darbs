@@ -35,3 +35,12 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
         Papildināta ielogošanās un konta izveides loģika ar savstarpēju linkošanu
         Izkomentēta pagaidu bilde (pēc īstās bildes atrašanas var vienkārši labot kometāru)
         Izveidots lapas virsraksts
+
+24/10/2023
+    -v0.6
+        Papildināta loģika saistīta ar admin lietotāju un parastu lietotāju
+        Pievienoju footeri ar webmaster un 4 saitēm un sociālajiem tīkliem un info paneli
+        Izveidoju sākumlapu, kas informē lietotāju par lietošanu
+        Nedaudz uzlabota stilistika
+        Mainīts favikons (neko daudz nemaina bet vairs netrigero mani)
+        Savstarpēji redirecti no lapas uz lapu un strādājoša loģika

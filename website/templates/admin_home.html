@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block page_title %}
+Admin Sākumlapa
+{% endblock %}
+
+{% block head_inners %}
+<script defer src="{{url_for('static', filename='js/home.js')}}"></script>
+{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid centered-content">
+    <div class="row">
+        <div class="col-12 mb-3">
+            <button class="btn btn-primary w-100" onclick="redirectTonewClient()">Jauns lietotājs</button>
+        </div>
+        <div class="col-12 mb-3">
+            <button class="btn btn-primary w-100">Uzgaidāmā telpa</button>
+        </div>
+        <div class="col-12">
+            <button class="btn btn-primary w-100">Visi lietotāji</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

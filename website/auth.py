@@ -5,6 +5,8 @@ auth = Blueprint('auth', __name__)
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     return render_template("login.html")
+    #if login successful and is admin return render template admin_home
+    #if not admin render template home
 
 @auth.route('/logout')
 def logout():
