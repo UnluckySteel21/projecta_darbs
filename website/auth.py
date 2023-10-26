@@ -1,12 +1,19 @@
 from flask import Blueprint, render_template, request, flash
+from .database import startWorkDB, endWrokDB
 
 auth = Blueprint('auth', __name__)
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
-    return render_template("login.html")
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        flash('Veiksmīga ielogošanās!', category='succes')
+        return render_template("user_home.html")
+    else:
+        return render_template("login.html")
     #if login successful and is admin return render template admin_home
-    #if not admin render template home
+    #if not admin render template user_home
 
 @auth.route('/logout')
 def logout():
@@ -32,6 +39,8 @@ def sign_up():
         elif password1 != password2:
             flash('Paroles nav vienādas!', category='error')
         else:
+            con, cur = startWorkDB()
+            #insert into database sthsth
             flash('Konts izveidots!', category='succes')
             return render_template("login.html")
         

@@ -1,5 +1,6 @@
 from flask import Flask
 from .config import Config
+from .database import initializeDB
 
 def create_app():
     app = Flask(__name__)
@@ -11,5 +12,6 @@ def create_app():
     app.register_blueprint(views, url_prefix = '/')
     app.register_blueprint(auth, url_prefix = '/')
 
+    initializeDB()
 
     return app

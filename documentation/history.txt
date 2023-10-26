@@ -50,4 +50,9 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
         sakārtota post un get logika
         Stilizēta new_client lapa
         Pievienota uzgaidāmā telpa
+
+26/10/2023
+    -v0.8
+        Pievonota datubāze (strādā pārsteidzoši labi)
+        Jauna klienta izveides dati tiek glabāti datubāzē
         
