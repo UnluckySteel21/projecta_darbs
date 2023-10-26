@@ -44,3 +44,10 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
         Nedaudz uzlabota stilistika
         Mainīts favikons (neko daudz nemaina bet vairs netrigero mani)
         Savstarpēji redirecti no lapas uz lapu un strādājoša loģika
+
+25/10/2023
+    -v0.7
+        sakārtota post un get logika
+        Stilizēta new_client lapa
+        Pievienota uzgaidāmā telpa
+        

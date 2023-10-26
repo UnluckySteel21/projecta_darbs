@@ -5,20 +5,28 @@ Admin Sākumlapa
 {% endblock %}
 
 {% block head_inners %}
-<script defer src="{{url_for('static', filename='js/home.js')}}"></script>
 {% endblock %}
 
 {% block main_content %}
+<div class="container-fluid">
+    <p style="color: red;">Datubāzes lietošana caur telefonu datu ievadei netiek rekomendēta. Programatūras darbība netiks traucēta, bet dati nebūs pārskatāmi, palielināta iespēja kļūdaini ievadīt datus.</p>
+</div>
 <div class="container-fluid centered-content">
     <div class="row">
         <div class="col-12 mb-3">
-            <button class="btn btn-primary w-100" onclick="redirectTonewClient()">Jauns lietotājs</button>
+            <form action="/new_client">
+                <button class="btn btn-primary w-100">Jauns klients</button>
+            </form>
         </div>
         <div class="col-12 mb-3">
-            <button class="btn btn-primary w-100">Uzgaidāmā telpa</button>
+            <form action="/pending_page">
+                <button class="btn btn-primary w-100">Uzgaidāmā telpa</button>
+            </form>
         </div>
         <div class="col-12">
-            <button class="btn btn-primary w-100">Visi lietotāji</button>
+            <form action="/all_users">
+                <button class="btn btn-primary w-100">Visi lietotāji</button>
+            </form>
         </div>
     </div>
 </div>
