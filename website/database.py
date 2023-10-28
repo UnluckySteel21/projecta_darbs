@@ -41,7 +41,8 @@ def initializeDB():
                 carVin VARCHAR(255),
                 date VARCHAR(255),
                 description VARCHAR(255),
-                person_id UUID REFERENCES person(id)
+                person_id UUID REFERENCES person(id),
+                status BOOLEAN NOT NULL
     );
     """)
 

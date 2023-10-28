@@ -55,4 +55,7 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
     -v0.8
         Pievonota datubāze (strādā pārsteidzoši labi)
         Jauna klienta izveides dati tiek glabāti datubāzē
-        
+
+27/10/2023
+    -v0.9
+        Uzlaboju datubāzes struktūru, ievaddatu pieņemšanu

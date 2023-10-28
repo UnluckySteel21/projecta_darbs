@@ -28,20 +28,45 @@ def new_client():
         c_vin = request.form.get('car_vin')
         c_desc = request.form.get('repair_specification')
 
-        conn, cur = startWorkDB()
-        cur.execute("""INSERT 
-                    INTO person (id, name, surname, email, phoneNumber) 
-                    VALUES (%s, %s, %s, %s, %s)
-                    """, (k_id, k_name, k_surname, k_email, k_num))
+        try:
+            conn, cur = startWorkDB()
+            cur.execute("SELECT * FROM person WHERE email LIKE %s", (k_email, ))
+            data = cur.fetchone()
+            if data != None:
+                try:
+                    cur.execute("""INSERT
+                                INTO car (id, brand, model, carNum, carVin, date, description, person_id, status)
+                                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                """, (c_id, c_brand, c_make, c_num, c_vin, now, c_desc, data[0], "no"))
+                    
+                    flash('Klients veiksmīgi pievonts!', category='succes')
+            
+                except Exception as e:
+                    flash(f'Kaut kas nogāja greizi: {e}', category='error')
         
-        cur.execute("""INSERT
-                    INTO car (id, brand, model, carNum, carVin, date, description, person_id)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                    """, (c_id, c_brand, c_make, c_num, c_vin, now, c_desc, k_id))
+            else:
+                try:
+                    cur.execute("""INSERT 
+                                INTO person (id, name, surname, email, phoneNumber) 
+                                VALUES (%s, %s, %s, %s, %s)
+                                """, (k_id, k_name, k_surname, k_email, k_num))
+            
+                    cur.execute("""INSERT
+                                INTO car (id, brand, model, carNum, carVin, date, description, person_id, status)
+                                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                """, (c_id, c_brand, c_make, c_num, c_vin, now, c_desc, k_id, "no"))
+
+                    flash('Klients veiksmīgi pievonts!', category='succes')
+            
+                except Exception as e:
+                    flash(f'Kaut kas nogāja greizi: {e}', category='error')
+
+        except Exception as e:
+            flash(f'Kaut kas nogāja greizi: {e}', category='error')
         
-        endWrokDB(conn)
-        
-        flash('Klients veiksmīgi pievonts!', category='succes')
+        finally:
+            endWrokDB(conn)
+
         return render_template("new_client.html")
     else:
         
