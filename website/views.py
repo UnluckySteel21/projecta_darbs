@@ -31,19 +31,19 @@ def new_client():
         try:
             conn, cur = startWorkDB()
             cur.execute("SELECT * FROM person WHERE email LIKE %s", (k_email, ))
-            data = cur.fetchone()
-            if data != None:
+            dataPerson = cur.fetchone()
+            if dataPerson != None:
                 try:
                     cur.execute("""INSERT
                                 INTO car (id, brand, model, carNum, carVin, date, description, person_id, status)
                                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-                                """, (c_id, c_brand, c_make, c_num, c_vin, now, c_desc, data[0], "no"))
+                                """, (c_id, c_brand, c_make, c_num, c_vin, now, c_desc, dataPerson[0], "no"))
                     
                     flash('Klients veiksmīgi pievonts!', category='succes')
             
                 except Exception as e:
                     flash(f'Kaut kas nogāja greizi: {e}', category='error')
-        
+
             else:
                 try:
                     cur.execute("""INSERT 

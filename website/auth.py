@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, request, flash
 from .database import startWorkDB, endWrokDB
+from uuid import uuid4
+from werkzeug.security import generate_password_hash, check_password_hash
 
 auth = Blueprint('auth', __name__)
 
@@ -39,10 +41,30 @@ def sign_up():
         elif password1 != password2:
             flash('Paroles nav vienādas!', category='error')
         else:
-            con, cur = startWorkDB()
-            #insert into database sthsth
-            flash('Konts izveidots!', category='succes')
-            return render_template("login.html")
+            try:
+                conn, cur = startWorkDB()
+                cur.execute("SELECT * FROM person WHERE email LIKE %s", (email,))
+                notUsedData = cur.fetchone()
+                cur.execute("SELECT * FROM logindata WHERE email LIKE %s", (email,))
+                UsedData = cur.fetchone()
+                if notUsedData != None:
+                    if notUsedData[1] == firstName and notUsedData[2] == lastName:
+                        if UsedData == None:
+                            loginID = str(uuid4())
+                            password = generate_password_hash(password1, method='pbkdf2:sha256')
+                            cur.execute("""INSERT
+                                        INTO logindata (id, email, password)
+                                        VALUES (%s, %s, %s)
+                                        """, (loginID, email, password))
+                            #insert into database sthsth
+                            flash('Konts izveidots!', category='succes')
+                            return render_template("login.html")
+            
+            except Exception as e:
+                flash(f'Kaut kas nogāja greizi: {e}', category='error')
+            
+            finally:
+                endWrokDB(conn)
         
         return render_template("sign_up.html")
     else:

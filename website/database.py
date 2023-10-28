@@ -26,21 +26,21 @@ def initializeDB():
 
     cur.execute("""CREATE TABLE IF NOT EXISTS person (
                 id UUID PRIMARY KEY,
-                name VARCHAR(255),
-                surname VARCHAR(255),
-                email VARCHAR(255) UNIQUE,
-                phoneNumber VARCHAR(255)
+                name VARCHAR(50),
+                surname VARCHAR(50),
+                email VARCHAR(50) UNIQUE,
+                phoneNumber VARCHAR(30)
     );
     """)
 
     cur.execute("""CREATE TABLE IF NOT EXISTS car (
                 id UUID PRIMARY KEY,
-                brand VARCHAR(255),
-                model VARCHAR(255),
-                carNum VARCHAR(255),
-                carVin VARCHAR(255),
-                date VARCHAR(255),
-                description VARCHAR(255),
+                brand VARCHAR(50),
+                model VARCHAR(50),
+                carNum VARCHAR(20),
+                carVin VARCHAR(50),
+                date VARCHAR(30),
+                description VARCHAR(350),
                 person_id UUID REFERENCES person(id),
                 status BOOLEAN NOT NULL
     );
@@ -48,8 +48,8 @@ def initializeDB():
 
     cur.execute("""CREATE TABLE IF NOT EXISTS logindata (
                 id UUID PRIMARY KEY,
-                email VARCHAR(255) REFERENCES person(email),
-                password VARCHAR(255)
+                email VARCHAR(50) REFERENCES person(email),
+                password VARCHAR(150)
     );
     """)
 
