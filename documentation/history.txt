@@ -67,3 +67,9 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
 29/10/2023
     -v0.11
         Strādājošs login mehānisms, atšķir admin un user datubāzes
+    
+    -v0.12
+        Atpazīst lietotājus (admin un user)
+        Neļauj bez ielogošanās piekļūt lapām
+        Session info uzglabā, nav jāielogojas katru reizi
+        Pēc ielogošanās nav bars pielāgojas atbilstoši lietotāja privilēģijām

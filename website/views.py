@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, flash
 from uuid import uuid4
 from datetime import datetime
 from .database import startWorkDB, endWrokDB
+from .verification import login_required, admin_login_required
 
 views = Blueprint('views', __name__)
 
@@ -11,6 +12,7 @@ def home():
     return render_template("home.html")
 
 @views.route('/new_client', methods = ['GET', 'POST'])
+@admin_login_required
 def new_client():
     now = datetime.now()
     now = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -72,17 +74,21 @@ def new_client():
         return render_template("new_client.html", date=now)
     
 @views.route('/all_users')
+@admin_login_required
 def all_users():
     return render_template("all_users.html")
 
 @views.route('/pending_page')
+@admin_login_required
 def pending_page():
     return render_template("pending_page.html")
 
 @views.route('/admin_home_161660')
+@admin_login_required
 def admin_home():
     return render_template("admin_home.html")
 
 @views.route('/user_home')
+@login_required
 def user_home():
     return render_template("user_home.html")

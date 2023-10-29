@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from .database import startWorkDB, endWrokDB
 from uuid import uuid4
 from werkzeug.security import generate_password_hash, check_password_hash
+from .verification import custom_logout_user, custom_user_session, login_required
 
 auth = Blueprint('auth', __name__)
 
@@ -20,6 +21,7 @@ def login():
                 hashed_password = adminData[2]
                 if check_password_hash(hashed_password, password):
                     flash('Veiksmīga ielogošanās!', category='succes')
+                    custom_user_session(False, True, remember=True)
                     return redirect(url_for("views.admin_home"))
                 else:
                     flash('Nepareiza parole!', category='error')
@@ -29,6 +31,7 @@ def login():
                 hashed_password = userData[2]
                 if check_password_hash(hashed_password, password):
                     flash('Veiksmīga ielogošanās!', category='succes')
+                    custom_user_session(True, False, remember=True)
                     return redirect(url_for("views.user_home"))
                 else:
                     flash('Neparieza parole!', category='error')
@@ -39,7 +42,7 @@ def login():
                 return redirect(url_for("auth.login"))
         
         except Exception as e:
-            flash('Kaut kas nogāja greizi!', category='error')
+            flash(f'Kaut kas nogāja greizi! {e}', category='error')
 
         finally:
             endWrokDB(conn)
@@ -49,8 +52,10 @@ def login():
         return render_template("login.html")
 
 @auth.route('/logout')
+@login_required
 def logout():
-    return "<p>logout</p>"
+    custom_logout_user()
+    return redirect(url_for('auth.login'))
 
 @auth.route('/sign_up', methods=['GET', 'POST'])
 def sign_up():
@@ -84,9 +89,9 @@ def sign_up():
                             loginID = str(uuid4())
                             password = generate_password_hash(password1, method='pbkdf2:sha256')
                             cur.execute("""INSERT
-                                        INTO logindata (id, email, password)
-                                        VALUES (%s, %s, %s)
-                                        """, (loginID, email, password))
+                                        INTO logindata (id, email, password, admin)
+                                        VALUES (%s, %s, %s, %s)
+                                        """, (loginID, email, password, False))
                             #insert into database sthsth
                             flash('Konts izveidots!', category='succes')
                             return redirect(url_for("auth.login"))

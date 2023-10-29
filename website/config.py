@@ -10,8 +10,6 @@ class Config:
     SECRET_KEY = environ.get("SECRET_KEY")
     MAINTENANCE_MODE = True if environ.get('MAINTENANCE_MODE') == 'True' else False
     FLASK_ENV = environ.get("FLASK_ENV")
-    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:V8laukums@@localhost:5432/postgres'
-
 
 class DevConfig(Config):
     ...

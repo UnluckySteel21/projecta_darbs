@@ -31,6 +31,39 @@
                 id="navbar">
                 <div 
                     class="navbar-nav">
+                    {% if session['admin'] %}
+                    <a 
+                        href="/admin_home_161660" 
+                        class="nav-item nav-link"
+                        id="admin_home">
+                        Sākumlapa
+                    </a>
+                    <a 
+                        href="/logout" 
+                        class="nav-item nav-link"
+                        id="logout">
+                        Irakstīties
+                    </a>
+                    {% elif session['user_id'] %}
+                    <a 
+                        href="/user_home" 
+                        class="nav-item nav-link"
+                        id="user_home">
+                        Sākumlapa
+                    </a>
+                    <a 
+                        href="/logout" 
+                        class="nav-item nav-link"
+                        id="logout">
+                        Irakstīties
+                    </a>
+                    {% else %}
+                    <a 
+                        href="/home" 
+                        class="nav-item nav-link"
+                        id="home">
+                        Sākumlapa
+                    </a>
                     <a 
                         href="/login" 
                         class="nav-item nav-link"
@@ -40,21 +73,10 @@
                     <a 
                         href="/sign_up" 
                         class="nav-item nav-link"
-                        id="signUp">
+                        id="sign_up">
                         Piereģistrēties
                     </a>
-                    <a 
-                        href="/logout" 
-                        class="nav-item nav-link"
-                        id="logout">
-                        Irakstīties
-                    </a>
-                    <a 
-                        href="/home" 
-                        class="nav-item nav-link"
-                        id="home">
-                        Sākumlapa
-                    </a>
+                    {% endif %}
                 </div>
             </div>
         </nav>
