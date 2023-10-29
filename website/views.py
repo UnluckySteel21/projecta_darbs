@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, request, flash
 from uuid import uuid4
 from datetime import datetime
-import psycopg2
 from .database import startWorkDB, endWrokDB
 
 views = Blueprint('views', __name__)
@@ -78,9 +77,7 @@ def all_users():
 
 @views.route('/pending_page')
 def pending_page():
-
-    fixID = uuid4()
-    return render_template("pending_page.html", fixID=fixID)
+    return render_template("pending_page.html")
 
 @views.route('/admin_home_161660')
 def admin_home():

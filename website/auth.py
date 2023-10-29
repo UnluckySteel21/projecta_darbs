@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash
+from flask import Blueprint, render_template, request, flash, redirect, url_for
 from .database import startWorkDB, endWrokDB
 from uuid import uuid4
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -10,12 +10,43 @@ def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
-        flash('Veiksmīga ielogošanās!', category='succes')
-        return render_template("user_home.html")
+        try:
+            conn, cur = startWorkDB()
+            cur.execute("SELECT * FROM logindata WHERE email LIKE %s", (email,))
+            userData = cur.fetchone()
+            cur.execute("SELECT * FROM admins WHERE email LIKE %s", (email,))
+            adminData = cur.fetchone()
+            if adminData != None:
+                hashed_password = adminData[2]
+                if check_password_hash(hashed_password, password):
+                    flash('Veiksmīga ielogošanās!', category='succes')
+                    return redirect(url_for("views.admin_home"))
+                else:
+                    flash('Nepareiza parole!', category='error')
+                    return redirect(url_for("auth.login"))
+            
+            if userData != None:
+                hashed_password = userData[2]
+                if check_password_hash(hashed_password, password):
+                    flash('Veiksmīga ielogošanās!', category='succes')
+                    return redirect(url_for("views.user_home"))
+                else:
+                    flash('Neparieza parole!', category='error')
+                    return redirect(url_for("auth.login"))
+            
+            else:
+                flash('Lietotājs nav atrasts! Pārbaudiet vai pareizi ievadīts epasts!', category='error')
+                return redirect(url_for("auth.login"))
+        
+        except Exception as e:
+            flash('Kaut kas nogāja greizi!', category='error')
+
+        finally:
+            endWrokDB(conn)
+
+        return render_template("login.html")
     else:
         return render_template("login.html")
-    #if login successful and is admin return render template admin_home
-    #if not admin render template user_home
 
 @auth.route('/logout')
 def logout():
@@ -58,7 +89,7 @@ def sign_up():
                                         """, (loginID, email, password))
                             #insert into database sthsth
                             flash('Konts izveidots!', category='succes')
-                            return render_template("login.html")
+                            return redirect(url_for("auth.login"))
             
             except Exception as e:
                 flash(f'Kaut kas nogāja greizi: {e}', category='error')

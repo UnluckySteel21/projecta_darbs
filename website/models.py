@@ -26,5 +26,4 @@ class Person(db.Model, UserMixin):
     surname = db.Column(db.String(100))
     email = db.Column(db.String(50), unique=True)
     phone_number = db.Column(db.String(30))
-    cars = db.relationship('Car')
- """
+    cars = db.relationship('Car') """

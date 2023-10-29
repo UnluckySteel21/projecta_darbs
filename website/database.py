@@ -49,7 +49,16 @@ def initializeDB():
     cur.execute("""CREATE TABLE IF NOT EXISTS logindata (
                 id UUID PRIMARY KEY,
                 email VARCHAR(50) REFERENCES person(email),
-                password VARCHAR(150)
+                password VARCHAR(150),
+                admin BOOLEAN NOT NULL
+    );
+    """)
+
+    cur.execute("""CREATE TABLE IF NOT EXISTS admins (
+                id UUID PRIMARY KEY,
+                email VARCHAR(50),
+                password VARCHAR(150),
+                admin BOOLEAN NOT NULL
     );
     """)
 

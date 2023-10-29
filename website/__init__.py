@@ -1,6 +1,6 @@
 from flask import Flask
 from .config import Config
-from flask_sqlalchemy import SQLAlchemy
+#from flask_sqlalchemy import SQLAlchemy
 from .database import initializeDB
 #from os import path
 
@@ -21,9 +21,11 @@ def create_app():
     #from .models import Person, Car, LoginData
 
     initializeDB()
+    #create_database(app)
 
     return app
 
 """ def create_database(app):
     if not path.exists('website/' + DB_NAME):
-        db.create_all(app=app) """
+        db.create_all(app=app)
+        print("Created database") """

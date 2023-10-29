@@ -63,3 +63,7 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
 28/10/2023
     -v0.10
         Password hashing mechanism
+
+29/10/2023
+    -v0.11
+        Strādājošs login mehānisms, atšķir admin un user datubāzes
