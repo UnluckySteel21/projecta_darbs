@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, flash
 from uuid import uuid4
 from datetime import datetime
 from .database import startWorkDB, endWrokDB
-from .verification import login_required, admin_login_required
+from .verification import login_required, admin_login_required, replace_special_chars
 
 views = Blueprint('views', __name__)
 
@@ -17,17 +17,17 @@ def new_client():
     now = datetime.now()
     now = now.strftime("%Y-%m-%d %H:%M:%S")
     if request.method == 'POST':
-        k_id = str(uuid4())
-        c_id = str(uuid4())
-        k_name = request.form.get('client_name')
-        k_surname = request.form.get('client_surname')
-        k_email = request.form.get('client_email')
-        k_num = request.form.get('client_number')
-        c_brand = request.form.get('car_brand')
-        c_make = request.form.get('car_make')
-        c_num = request.form.get('car_number')
-        c_vin = request.form.get('car_vin')
-        c_desc = request.form.get('repair_specification')
+        k_id = replace_special_chars(str(uuid4()))
+        c_id = replace_special_chars(str(uuid4()))
+        k_name = replace_special_chars(request.form.get('client_name').upper())
+        k_surname = replace_special_chars(request.form.get('client_surname').upper())
+        k_email = replace_special_chars(request.form.get('client_email'))
+        k_num = replace_special_chars(request.form.get('client_number').upper())
+        c_brand = replace_special_chars(request.form.get('car_brand').upper())
+        c_make = replace_special_chars(request.form.get('car_make').upper())
+        c_num = replace_special_chars(request.form.get('car_number').upper())
+        c_vin = replace_special_chars(request.form.get('car_vin').upper())
+        c_desc = replace_special_chars(request.form.get('repair_specification'))
 
         try:
             conn, cur = startWorkDB()
@@ -81,7 +81,26 @@ def all_users():
 @views.route('/pending_page')
 @admin_login_required
 def pending_page():
-    return render_template("pending_page.html")
+    car_data = []
+    person_data = []
+    try:
+        conn, cur = startWorkDB()
+        cur.execute("SELECT brand, model, carNum, carVin, date, id, person_id FROM car WHERE status = false")
+        car_data = cur.fetchall()
+        for row in car_data:
+            person_id = row[6]
+            cur.execute("SELECT name, surname, email, phoneNumber FROM person WHERE id = %s", (person_id,))
+            person_data.append(cur.fetchone())
+    
+    except Exception as e:
+        flash(f'Kaut kas nogāja greizi: {e}', category='error')
+
+    finally:
+        endWrokDB(conn)
+
+    data = zip(person_data, car_data)
+
+    return render_template("pending_page.html", data = data)
 
 @views.route('/admin_home_161660')
 @admin_login_required

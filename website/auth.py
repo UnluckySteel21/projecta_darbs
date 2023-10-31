@@ -2,14 +2,14 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from .database import startWorkDB, endWrokDB
 from uuid import uuid4
 from werkzeug.security import generate_password_hash, check_password_hash
-from .verification import custom_logout_user, custom_user_session, login_required
+from .verification import custom_logout_user, custom_user_session, login_required, replace_special_chars
 
 auth = Blueprint('auth', __name__)
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form.get('email')
+        email = replace_special_chars(request.form.get('email'))
         password = request.form.get('password')
         try:
             conn, cur = startWorkDB()
@@ -60,9 +60,9 @@ def logout():
 @auth.route('/sign_up', methods=['GET', 'POST'])
 def sign_up():
     if request.method == 'POST':
-        email = request.form.get('email')
-        firstName = request.form.get('firstName')
-        lastName = request.form.get('lastName')
+        email = replace_special_chars(request.form.get('email'))
+        firstName = replace_special_chars(request.form.get('firstName').upper())
+        lastName = replace_special_chars(request.form.get('lastName').upper())
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
 
@@ -83,18 +83,17 @@ def sign_up():
                 notUsedData = cur.fetchone()
                 cur.execute("SELECT * FROM logindata WHERE email LIKE %s", (email,))
                 UsedData = cur.fetchone()
-                if notUsedData != None:
-                    if notUsedData[1] == firstName and notUsedData[2] == lastName:
-                        if UsedData == None:
-                            loginID = str(uuid4())
-                            password = generate_password_hash(password1, method='pbkdf2:sha256')
-                            cur.execute("""INSERT
-                                        INTO logindata (id, email, password, admin)
-                                        VALUES (%s, %s, %s, %s)
-                                        """, (loginID, email, password, False))
-                            #insert into database sthsth
-                            flash('Konts izveidots!', category='succes')
-                            return redirect(url_for("auth.login"))
+                if notUsedData is None or notUsedData[1] != firstName or notUsedData[2] != lastName:
+                    flash('Invalid user data!', category='error')
+                elif UsedData is None:
+                    loginID = str(uuid4())
+                    password = generate_password_hash(password1, method='pbkdf2:sha256')
+                    cur.execute("""INSERT
+                                INTO logindata (id, email, password, admin)
+                                VALUES (%s, %s, %s, %s)
+                                """, (loginID, email, password, False))
+                    flash('Konts izveidots!', category='succes')
+                    return redirect(url_for("auth.login"))
             
             except Exception as e:
                 flash(f'Kaut kas nogāja greizi: {e}', category='error')

@@ -31,3 +31,7 @@ def admin_login_required(f):
             return redirect(url_for('auth.login', next=request.url))
         return f(*args, **kwargs)
     return decorated_function
+
+def replace_special_chars(text):
+    trans = str.maketrans("ĒĀĪŪ", "EAIU")
+    return text.translate(trans)

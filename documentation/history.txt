@@ -73,3 +73,9 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
         Neļauj bez ielogošanās piekļūt lapām
         Session info uzglabā, nav jāielogojas katru reizi
         Pēc ielogošanās nav bars pielāgojas atbilstoši lietotāja privilēģijām
+
+31/10/2023
+    -v0.13
+        Īpašo rakstzīmju aizstāšana ar standartizētām rakstzīmēm
+        Uzgaidāmās telpas daļēja pabeigšana (uzrāda darubāzes datus, bet nodošanas poga nedarbojas)
+        Visas rakstzīmes mazākas nozīmes datos tiek aizstāta ar lielajiem burtiem, šādi atvieglojot datu meklēšanas procesu.
