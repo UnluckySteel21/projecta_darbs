@@ -9,11 +9,25 @@ Visi lietotāji
 
 {% block main_content %}
 <div class="container-fluid">
+    <form method="GET" action="/all_users" style="margin-top: 10px;">
+        <label for="search_field">Meklēt pēc:</label>
+        <select id="search_field" name="search_field">
+            <option value="name">Vārds</option>
+            <option value="surname">Uzvārds</option>
+            <option value="phoneNumber">Telefona numurs</option>
+            <option value="brand">Marka</option>
+            <option value="make">Modelis</option>
+            <option value="carNum">Automašīnas numurs</option>
+            <option value="carVin">Vin numurs</option>
+            <option value="date">Datums</option>
+        </select>
+        <input type="text" id="search_value" name="search_value" placeholder="Ievadi meklējamo vērtību">
+        <input type="submit" value="Search">
+    </form>
     <table class="table table-striped-columns" style="margin-top: 10px; text-align: center;">
         <thead>
             <tr>
-                <th>Vārds</th>
-                <th>Uzvārds</th>
+                <th>Vārds, Uzvārds</th>
                 <th>Epasts</th>
                 <th>Telefona numurs</th>
                 <th>Marka</th>
@@ -21,21 +35,33 @@ Visi lietotāji
                 <th>Numurs</th>
                 <th>Vin</th>
                 <th>Pakalpojuma ID</th>
+                <th>Datums</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
-            <!--in a for there will be all this good stuff-->
+            {% for row in data %}
             <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>{{ row[0] }} {{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+                <td>{{ row[3] }}</td>
+                <td>{{ row[4] }}</td>
+                <td>{{ row[5] }}</td>
+                <td>{{ row[6] }}</td>
+                <td>{{ row[7] }}</td>
+                <td>{{ row[8] }}</td>
+                <td>{{ row[9] }}</td>
+                <td>
+                    {% if row[10] %}
+                        <i class="bi bi-check-square-fill" style="color: green;"></i>
+                    {% else %}
+                        <i class="bi bi-x-square-fill" style="color: red;"></i>
+                    {% endif %}
+                </td>
             </tr>
+            {% else %}
+            <p>Nav datu!</p>
+            {% endfor %}
         </tbody>
     </table>
 </div>

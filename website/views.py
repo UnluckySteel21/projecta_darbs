@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash
+from flask import Blueprint, render_template, request, flash, redirect, url_for
 from uuid import uuid4
 from datetime import datetime
 from .database import startWorkDB, endWrokDB
@@ -76,16 +76,51 @@ def new_client():
 @views.route('/all_users')
 @admin_login_required
 def all_users():
-    return render_template("all_users.html")
+    search_field = request.args.get('search_field', None)
+    search_value = request.args.get('search_value', None)
 
-@views.route('/pending_page')
+    if search_field != 'E-pasts' or search_field == 'Datums':
+        if search_value != None:
+            search_value = replace_special_chars(search_value.upper())
+    
+    data = []
+    try:
+        conn, cur = startWorkDB()
+
+        if search_field and search_value:
+            query = f"""SELECT person.name, person.surname, person.email, person.phoneNumber, 
+                       car.brand, car.model, car.carNum, car.carVin, car.id, car.date, car.status 
+                       FROM person 
+                       INNER JOIN car ON person.id = car.person_id
+                       WHERE {search_field} LIKE %s
+                       ORDER BY car.date DESC"""
+            cur.execute(query, (f"%{search_value}%",))
+        else:
+            query = """SELECT person.name, person.surname, person.email, person.phoneNumber, 
+                       car.brand, car.model, car.carNum, car.carVin, car.id, car.date, car.status 
+                       FROM person 
+                       INNER JOIN car ON person.id = car.person_id
+                       ORDER BY car.date DESC"""
+            cur.execute(query)
+
+        data = cur.fetchall()
+
+    except Exception as e:
+        flash(f'Kaut kas nogāja greizi: {e}', category='error')
+
+    finally:
+        endWrokDB(conn)
+
+    return render_template("all_users.html", data=data)
+
+@views.route('/pending_page', methods = ['GET'])
 @admin_login_required
 def pending_page():
     car_data = []
     person_data = []
     try:
         conn, cur = startWorkDB()
-        cur.execute("SELECT brand, model, carNum, carVin, date, id, person_id FROM car WHERE status = false")
+        cur.execute("SELECT brand, model, carNum, carVin, date, id, person_id, description FROM car WHERE status = false ORDER BY date DESC")
         car_data = cur.fetchall()
         for row in car_data:
             person_id = row[6]
@@ -101,6 +136,22 @@ def pending_page():
     data = zip(person_data, car_data)
 
     return render_template("pending_page.html", data = data)
+
+@views.route('/update_car_status', methods=['POST'])
+@admin_login_required
+def update_car_status():
+    car_id = request.form.get('car_id')
+
+    try:
+        conn, cur = startWorkDB()
+        cur.execute("UPDATE car SET status = true WHERE id = %s", (car_id,))
+        conn.commit()
+    except Exception as e:
+        flash(f'Something went wrong: {e}', category='error')
+    finally:
+        endWrokDB(conn)
+
+    return redirect(url_for('views.pending_page'))
 
 @views.route('/admin_home_161660')
 @admin_login_required

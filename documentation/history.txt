@@ -79,3 +79,12 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
         Īpašo rakstzīmju aizstāšana ar standartizētām rakstzīmēm
         Uzgaidāmās telpas daļēja pabeigšana (uzrāda darubāzes datus, bet nodošanas poga nedarbojas)
         Visas rakstzīmes mazākas nozīmes datos tiek aizstāta ar lielajiem burtiem, šādi atvieglojot datu meklēšanas procesu.
+
+1/11/2023
+    -v0.14
+        Uzlabota tabulas dinamika (paslēpj un parāda aprakstu ar pogas palīdzību)
+        Meklēšanas mehānisms pilnajā klientu datubāzē
+        Uzlabota datu konfigurācija uzgaidāmajā telpā
+        Meklēšana darbojas non-case-sensitive
+
+        Progress tika atrādīts klientam. Kopumā pozitīvas atsauksmes.
