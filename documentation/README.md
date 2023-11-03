@@ -1,6 +1,7 @@
 "# projecta_darbs" 
 
 Klonējot darbu nepieciešams:
+
     1. Izveidot pašam savu venv mapi (tā atrodas blakus website mapei, nevis tajā iekšā)
     2. Izveidot .env failu, kurā
         2.1 Jānorāda secret_key 
