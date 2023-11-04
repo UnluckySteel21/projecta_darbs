@@ -10,6 +10,21 @@ Uzgaidāmā telpa
 
 {% block main_content %}
 <div class="container-fluid">
+    <form method="GET" action="/pending_page" style="margin-top: 10px;">
+        <label for="search_field">Meklēt pēc:</label>
+        <select id="search_field" name="search_field">
+            <option value="name">Vārds</option>
+            <option value="surname">Uzvārds</option>
+            <option value="phoneNumber">Telefona numurs</option>
+            <option value="brand">Marka</option>
+            <option value="model">Modelis</option>
+            <option value="carNum">Automašīnas numurs</option>
+            <option value="carVin">Vin numurs</option>
+            <option value="date">Datums</option>
+        </select>
+        <input type="text" id="search_value" name="search_value" placeholder="Ievadi meklējamo vērtību">
+        <input type="submit" value="Search">
+    </form>
     <table class="table table-striped-columns" style="margin-top: 10px; text-align: center;">
         <thead>
             <tr>
@@ -26,29 +41,41 @@ Uzgaidāmā telpa
             </tr>
         </thead>
         <tbody>
-            {% for person, car in data %}
-                <tr>
-                    <td>{{ person[0] }} {{ person[1] }}</td>
-                    <td>{{ car[4] }}</td>
-                    <td>{{ person[2] }}</td>
-                    <td>{{ person[3] }}</td>
-                    <td>{{ car[0] }} {{ car[1] }}</td>
-                    <td><button onclick="showDescription(this, '{{ car[7] }}')">Rādīt aprakstu</button> <!-- Add this line -->
-                        <div id="desc-{{ car[7] }}" style="display: none;">{{ car[7] }}</div></td>
-                    <td>{{ car[2] }}</td>
-                    <td>{{ car[3] }}</td>
-                    <td>{{ car[5] }}</td>
-                    <td>
-                        <form method="POST" action="/update_car_status">
-                            <input type="hidden" name="car_id" value="{{ car[5] }}">
+            {% for row in data %}
+            <tr>
+                <td>{{ row[0] }} {{ row[1] }}</td>
+                <td>{{ row[9] }}</td>
+                <td>{{ row[2] }}</td>
+                <td>{{ row[3] }}</td>
+                <td>{{ row[4] }} {{ row[5] }}</td>
+                <td><button onclick="showDescription(this, '{{ row[11] }}')">Rādīt aprakstu</button> <!-- Add this line -->
+                    <div id="desc-{{ row[11] }}" style="display: none;">{{ row[11] }}</div></td>
+                <td>{{ row[6] }}</td>
+                <td>{{ row[7] }}</td>
+                <td>{{ row[8] }}</td>
+                <td>
+                    <div style="display: flex;">
+                        <form method="POST" action="/update_car_status" onsubmit="return confirm('Vai vēlaties pievienot ierakstu datubāzei?')" style="margin-right: 10px;">
+                            <input type="hidden" name="car_id" value="{{ row[10] }}">
                             <button class="btn" style="padding: 0; margin: 0;" type="submit">
                                 <i class="bi bi-check-square-fill" style="font-size: 16px; color: green;"></i>
                             </button>
                         </form>  
-                    </td>
-                    </tr>
+                        <form method="POST" action="/delete_car" onsubmit="return confirm('Vai vēlaties dzēst ierakstu?')">
+                            <input type="hidden" name="car_id" value="{{ row[10] }}">
+                            <button class="btn" style="padding: 0; margin: 0;" type="submit">
+                                <i class="bi bi-trash-fill" style="font-size: 16px; color: red;"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
             {% else %}
-                <p>Nav datu</p>
+                <tr>
+                    <td colspan="10">
+                        Nav datu!
+                    </td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>

@@ -76,12 +76,30 @@ def new_client():
 @views.route('/all_users')
 @admin_login_required
 def all_users():
+    # Mapping form values to database column names
+    column_mapping = {
+        "name": "person.name",
+        "surname": "person.surname",
+        "phoneNumber": "person.phoneNumber",
+        "brand": "car.brand",
+        "model": "car.model",
+        "carNum": "car.carNum",
+        "carVin": "car.carVin",
+        "date": "car.date"
+    }
+
     search_field = request.args.get('search_field', None)
     search_value = request.args.get('search_value', None)
 
-    if search_field != 'E-pasts' or search_field == 'Datums':
-        if search_value != None:
-            search_value = replace_special_chars(search_value.upper())
+    # Check if the search field exists in the column mapping
+    if search_field in column_mapping:
+        search_field = column_mapping[search_field]
+    else:
+        flash('Nepareizs ievades lauks', category='error')
+        return redirect(url_for('views.all_users'))
+
+    if search_value != None:
+        search_value = replace_special_chars(search_value.upper())
     
     data = []
     try:
@@ -89,7 +107,7 @@ def all_users():
 
         if search_field and search_value:
             query = f"""SELECT person.name, person.surname, person.email, person.phoneNumber, 
-                       car.brand, car.model, car.carNum, car.carVin, car.id, car.date, car.status 
+                       car.brand, car.model, car.carNum, car.carVin, car.id, car.date, car.status, car.description
                        FROM person 
                        INNER JOIN car ON person.id = car.person_id
                        WHERE {search_field} LIKE %s
@@ -97,7 +115,7 @@ def all_users():
             cur.execute(query, (f"%{search_value}%",))
         else:
             query = """SELECT person.name, person.surname, person.email, person.phoneNumber, 
-                       car.brand, car.model, car.carNum, car.carVin, car.id, car.date, car.status 
+                       car.brand, car.model, car.carNum, car.carVin, car.id, car.date, car.status, car.description 
                        FROM person 
                        INNER JOIN car ON person.id = car.person_id
                        ORDER BY car.date DESC"""
@@ -116,26 +134,75 @@ def all_users():
 @views.route('/pending_page', methods = ['GET'])
 @admin_login_required
 def pending_page():
-    car_data = []
-    person_data = []
+    # Mapping form values to database column names
+    column_mapping = {
+        "name": "person.name",
+        "surname": "person.surname",
+        "phoneNumber": "person.phoneNumber",
+        "brand": "car.brand",
+        "model": "car.model",
+        "carNum": "car.carNum",
+        "carVin": "car.carVin",
+        "date": "car.date"
+    }
+
+    search_field = request.args.get('search_field', None)
+    search_value = request.args.get('search_value', None)
+
+    # Check if the search field exists in the column mapping
+    if search_field in column_mapping:
+        search_field = column_mapping[search_field]
+    else:
+        flash('Invalid search field', category='error')
+        return redirect(url_for('pending_page'))
+
+    if search_value != None:
+        search_value = replace_special_chars(search_value.upper())
+    
+    data = []
     try:
         conn, cur = startWorkDB()
-        cur.execute("SELECT brand, model, carNum, carVin, date, id, person_id, description FROM car WHERE status = false ORDER BY date DESC")
-        car_data = cur.fetchall()
-        for row in car_data:
-            person_id = row[6]
-            cur.execute("SELECT name, surname, email, phoneNumber FROM person WHERE id = %s", (person_id,))
-            person_data.append(cur.fetchone())
-    
+
+        if search_field and search_value:
+            query = f"""SELECT person.name, person.surname, person.email, person.phoneNumber, 
+                       car.brand, car.model, car.carNum, car.carVin, car.id, car.date, car.status, car.description
+                       FROM person 
+                       INNER JOIN car ON person.id = car.person_id
+                       WHERE {search_field} LIKE %s AND car.status = false
+                       ORDER BY car.date DESC"""
+            cur.execute(query, (f"%{search_value}%",))
+        else:
+            query = """SELECT person.name, person.surname, person.email, person.phoneNumber, 
+                       car.brand, car.model, car.carNum, car.carVin, car.id, car.date, car.status, car.description 
+                       FROM person 
+                       INNER JOIN car ON person.id = car.person_id
+                       WHERE car.status = false
+                       ORDER BY car.date DESC"""
+            cur.execute(query)
+
+        data = cur.fetchall()
+
     except Exception as e:
         flash(f'Kaut kas nogāja greizi: {e}', category='error')
 
     finally:
         endWrokDB(conn)
 
-    data = zip(person_data, car_data)
-
     return render_template("pending_page.html", data = data)
+
+@views.route('/delete_car', methods=['POST'])
+def delete_car():
+    car_id = request.form.get('car_id')
+    try:
+        conn, cur = startWorkDB()
+        cur.execute("DELETE FROM car WHERE id = %s", (car_id,))
+        conn.commit()
+        flash('Ieraksts veiksmīgi dzēsts', category='success')
+    except Exception as e:
+        flash(f'Kaut kas nogāja greizi: {e}', category='error')
+    finally:
+        endWrokDB(conn)
+    return redirect(url_for('views.pending_page'))
 
 @views.route('/update_car_status', methods=['POST'])
 @admin_login_required

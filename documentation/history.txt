@@ -88,3 +88,10 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
         Meklēšana darbojas non-case-sensitive
 
         Progress tika atrādīts klientam. Kopumā pozitīvas atsauksmes.
+
+4/11/2023
+    -v0.15
+        SQL injection prevention
+        Pilnībā pabeigts meklēšanas mehānisms, kas darbojas gan visu lietotāju lapā, gan uzgaidāmā telpā
+
+        Piezīmes nākotnei: XSS, CSRF, IDOR drošība?
