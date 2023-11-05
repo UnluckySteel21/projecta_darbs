@@ -8,24 +8,21 @@ Admin Sākumlapa
 {% endblock %}
 
 {% block main_content %}
-<div class="container-fluid">
-    <p style="color: red;">Datubāzes lietošana caur telefonu datu ievadei netiek rekomendēta. Programatūras darbība netiks traucēta, bet dati nebūs pārskatāmi, palielināta iespēja kļūdaini ievadīt datus.</p>
-</div>
 <div class="container-fluid centered-content">
     <div class="row">
         <div class="col-12 mb-3">
             <form action="/new_client">
-                <button class="btn btn-primary w-100">Jauns klients</button>
+                <button class="btn btn-light w-100">Jauns klients</button>
             </form>
         </div>
         <div class="col-12 mb-3">
             <form action="/pending_page">
-                <button class="btn btn-primary w-100">Uzgaidāmā telpa</button>
+                <button class="btn btn-light w-100">Uzgaidāmā telpa</button>
             </form>
         </div>
         <div class="col-12">
             <form action="/all_users">
-                <button class="btn btn-primary w-100">Visi lietotāji</button>
+                <button class="btn btn-light w-100">Visi lietotāji</button>
             </form>
         </div>
     </div>

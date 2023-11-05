@@ -81,6 +81,10 @@ Jauns klients
                             name="car_number" 
                             placeholder="Ievadi klienta auto numuru">
                     </div>
+                </div>
+                <div class="col-md-2"></div>
+                <div class="col-md-5">
+                    <br>
                     <div class="form-group">
                         <label for="car_vin">Ievadi auto vin numuru</label>
                         <input 
@@ -90,11 +94,7 @@ Jauns klients
                             name="car_vin" 
                             placeholder="Ievadi klienta auto vin">
                     </div>
-                </div>
-                <div class="col-md-2"></div>
-                <div class="col-md-5">
-                    <br>
-                    <div>
+                    <div class="form-group" style="margin-top: 10px;">
                         <p>Datums un laiks: {{ date  }}</p>
                     </div>
                     <div class="form-group">
@@ -103,7 +103,7 @@ Jauns klients
                             class="form-control h-100" 
                             id="repair_specification" 
                             name="repair_specification" 
-                            rows="16"
+                            rows="10"
                             placeholder="Ievadi remontdarba specifikāciju"></textarea>
                     </div>
                 </div>
@@ -112,7 +112,7 @@ Jauns klients
             <div>
                 <button 
                     type="submit"
-                    class="btn btn-primary d-block mx-auto">
+                    class="btn btn-light d-block mx-auto">
                     Iesniegt
                 </button>
             </div>

@@ -105,3 +105,6 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
         Nonācu pie secinājuma, ka esmu uzrakstījis endWrokDB funkciju nepareizi. iespējams kādreiz vajadzētu salabot.
         Flash paziņojumu modifikācija (paši aizveras pēc kāda laika un nestumj lapas saturu uz leju)
         Jauna funkcija verification.py, kas aizstāj potenciāli bīstamus ievaddatus.
+
+    -v0.17
+        Pilnveidots stils (Ņemtas vērā pasūtītāja vēlmes. Līdzīgs gala produktam)
