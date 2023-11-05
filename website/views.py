@@ -1,8 +1,8 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from uuid import uuid4
 from datetime import datetime
 from .database import startWorkDB, endWrokDB
-from .verification import login_required, admin_login_required, replace_special_chars
+from .verification import login_required, admin_login_required, sanitize_and_replace
 
 views = Blueprint('views', __name__)
 
@@ -14,22 +14,26 @@ def home():
 @views.route('/new_client', methods = ['GET', 'POST'])
 @admin_login_required
 def new_client():
+    #New client insertion into database
+    #fetching time and date
     now = datetime.now()
     now = now.strftime("%Y-%m-%d %H:%M:%S")
     if request.method == 'POST':
-        k_id = replace_special_chars(str(uuid4()))
-        c_id = replace_special_chars(str(uuid4()))
-        k_name = replace_special_chars(request.form.get('client_name').upper())
-        k_surname = replace_special_chars(request.form.get('client_surname').upper())
-        k_email = replace_special_chars(request.form.get('client_email'))
-        k_num = replace_special_chars(request.form.get('client_number').upper())
-        c_brand = replace_special_chars(request.form.get('car_brand').upper())
-        c_make = replace_special_chars(request.form.get('car_make').upper())
-        c_num = replace_special_chars(request.form.get('car_number').upper())
-        c_vin = replace_special_chars(request.form.get('car_vin').upper())
-        c_desc = replace_special_chars(request.form.get('repair_specification'))
+        #sanitizing user input and making it mostly uppercase for easier search funtion
+        k_id = sanitize_and_replace(str(uuid4()))
+        c_id = sanitize_and_replace(str(uuid4()))
+        k_name = sanitize_and_replace(request.form.get('client_name').upper())
+        k_surname = sanitize_and_replace(request.form.get('client_surname').upper())
+        k_email = sanitize_and_replace(request.form.get('client_email'))
+        k_num = sanitize_and_replace(request.form.get('client_number').upper())
+        c_brand = sanitize_and_replace(request.form.get('car_brand').upper())
+        c_make = sanitize_and_replace(request.form.get('car_make').upper())
+        c_num = sanitize_and_replace(request.form.get('car_number').upper())
+        c_vin = sanitize_and_replace(request.form.get('car_vin').upper())
+        c_desc = sanitize_and_replace(request.form.get('repair_specification'))
 
         try:
+            #all this in a try so website keeps running if there is a database failure.
             conn, cur = startWorkDB()
             cur.execute("SELECT * FROM person WHERE email LIKE %s", (k_email, ))
             dataPerson = cur.fetchone()
@@ -76,7 +80,8 @@ def new_client():
 @views.route('/all_users')
 @admin_login_required
 def all_users():
-    # Mapping form values to database column names
+    # shows all users in the database
+    # Mapping form values to database column names (trying to prevent sql injections)
     column_mapping = {
         "name": "person.name",
         "surname": "person.surname",
@@ -92,17 +97,19 @@ def all_users():
     search_value = request.args.get('search_value', None)
 
     # Check if the search field exists in the column mapping
-    if search_field in column_mapping:
-        search_field = column_mapping[search_field]
-    else:
-        flash('Nepareizs ievades lauks', category='error')
-        return redirect(url_for('views.all_users'))
+    if search_field is not None:
+        if search_field in column_mapping:
+            search_field = column_mapping[search_field]
+        else:
+            flash('Nepareizs ievades lauks', category='error')
+            return redirect(url_for('views.all_users'))
 
     if search_value != None:
-        search_value = replace_special_chars(search_value.upper())
+        search_value = sanitize_and_replace(search_value.upper())
     
     data = []
     try:
+        #allat in a try so the webiste keeps running 
         conn, cur = startWorkDB()
 
         if search_field and search_value:
@@ -134,7 +141,8 @@ def all_users():
 @views.route('/pending_page', methods = ['GET'])
 @admin_login_required
 def pending_page():
-    # Mapping form values to database column names
+    # the pending page for users whos status is false (work unfinished)
+    # Mapping form values to database column names (tying to prevent sql injections)
     column_mapping = {
         "name": "person.name",
         "surname": "person.surname",
@@ -150,40 +158,40 @@ def pending_page():
     search_value = request.args.get('search_value', None)
 
     # Check if the search field exists in the column mapping
-    if search_field in column_mapping:
-        search_field = column_mapping[search_field]
-    else:
-        flash('Invalid search field', category='error')
-        return redirect(url_for('pending_page'))
+    if search_field is not None:
+        if search_field in column_mapping:
+            search_field = column_mapping[search_field]
+        else:
+            flash('Nepareizs ievades lauks', category='error')
+            return redirect(url_for('views.all_users'))
 
     if search_value != None:
-        search_value = replace_special_chars(search_value.upper())
-    
+        search_value = sanitize_and_replace(search_value.upper())
+
     data = []
     try:
+        # try so the website keeps running 
         conn, cur = startWorkDB()
 
+        query = """SELECT person.name, person.surname, person.email, person.phoneNumber, 
+                   car.brand, car.model, car.carNum, car.carVin, car.id, car.date, car.status, car.description 
+                   FROM person 
+                   INNER JOIN car ON person.id = car.person_id
+                   WHERE car.status = false"""
+
+        params = []
+
         if search_field and search_value:
-            query = f"""SELECT person.name, person.surname, person.email, person.phoneNumber, 
-                       car.brand, car.model, car.carNum, car.carVin, car.id, car.date, car.status, car.description
-                       FROM person 
-                       INNER JOIN car ON person.id = car.person_id
-                       WHERE {search_field} LIKE %s AND car.status = false
-                       ORDER BY car.date DESC"""
-            cur.execute(query, (f"%{search_value}%",))
-        else:
-            query = """SELECT person.name, person.surname, person.email, person.phoneNumber, 
-                       car.brand, car.model, car.carNum, car.carVin, car.id, car.date, car.status, car.description 
-                       FROM person 
-                       INNER JOIN car ON person.id = car.person_id
-                       WHERE car.status = false
-                       ORDER BY car.date DESC"""
-            cur.execute(query)
+            query += f" AND {search_field} LIKE %s"
+            params.append(f"%{search_value}%")
+
+        query += " ORDER BY car.date DESC"
+        cur.execute(query, params)
 
         data = cur.fetchall()
 
     except Exception as e:
-        flash(f'Kaut kas nogāja greizi: {e}', category='error')
+        flash(f'An error occurred: {e}', category='error')
 
     finally:
         endWrokDB(conn)
@@ -192,6 +200,7 @@ def pending_page():
 
 @views.route('/delete_car', methods=['POST'])
 def delete_car():
+    # deletes a row from the database (possible only if status is false)
     car_id = request.form.get('car_id')
     try:
         conn, cur = startWorkDB()
@@ -207,6 +216,7 @@ def delete_car():
 @views.route('/update_car_status', methods=['POST'])
 @admin_login_required
 def update_car_status():
+    # reddirect from button. Updates car status from false (work unfinished) to true (work finished)
     car_id = request.form.get('car_id')
 
     try:
@@ -228,4 +238,41 @@ def admin_home():
 @views.route('/user_home')
 @login_required
 def user_home():
-    return render_template("user_home.html")
+    user_id = session.get('user_id')
+    cars = []
+    
+    if user_id:
+        try:
+            conn, cur = startWorkDB()
+
+            # Query to retrieve the user's ID based on their email from the logindata table
+            cur.execute("SELECT person.id FROM person JOIN logindata ON person.email = logindata.email WHERE logindata.id = %s", (user_id,))
+            
+            user_data = cur.fetchone()
+            if user_data:
+                user_id = user_data[0]  # Update user_id with the retrieved user's ID
+
+                # Now, you can use the updated user_id to fetch the cars associated with the user
+                cur.execute("SELECT * FROM car WHERE person_id = %s", (user_id,))
+                cars = cur.fetchall()
+            else:
+                flash('User not found!', category='error')
+                return redirect(url_for("auth.login"))
+
+        except Exception as e:
+            flash(f'An error occurred: {e}', category='error')
+        finally:
+            endWrokDB(conn)
+    else:
+        flash('User ID not found in session!', category='error')
+        return redirect(url_for("auth.login"))
+
+    return render_template("user_home.html", cars=cars)
+
+
+@views.after_request
+def apply_caching(response):
+    # me trying to stop XSS (i dont know what im doing)
+    response.headers["X-Content-Type-Options"] = "nosniff" # Yeah! Dont sniff. Thats weird
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    return response

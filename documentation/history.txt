@@ -95,3 +95,13 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
         Pilnībā pabeigts meklēšanas mehānisms, kas darbojas gan visu lietotāju lapā, gan uzgaidāmā telpā
 
         Piezīmes nākotnei: XSS, CSRF, IDOR drošība?
+    
+5/11/2023
+    -v0.16
+        XSS drošība uzlabota (skeptiska attieksme pret manu drošības sistēmu)
+        Major bug fix!!! Pēc mana pēdējās versijas (-v0.15) SQL pieprasījumi nebija veiksmīgi, ja nebija nekādu ievaddatu
+        Pilnībā izveidota un sakārtota user interface puse
+        Atrisināta loģikas kļūda datubāzes heirarhijā
+        Nonācu pie secinājuma, ka esmu uzrakstījis endWrokDB funkciju nepareizi. iespējams kādreiz vajadzētu salabot.
+        Flash paziņojumu modifikācija (paši aizveras pēc kāda laika un nestumj lapas saturu uz leju)
+        Jauna funkcija verification.py, kas aizstāj potenciāli bīstamus ievaddatus.

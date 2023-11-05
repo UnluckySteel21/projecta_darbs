@@ -10,7 +10,8 @@ Klonējot darbu nepieciešams:
             FLASK_ENV = "piemēram development"
         2.3 Jānorāda maintenence mode status
             MAINTENANCE_MODE = "False vai True"
-    3. Jāizveido database.py fails pēc šāda principa (Ffaktiski copy/paste izveidojot savu datubāzi):
+    3. Jāizveido database.py fails pēc šāda principa (Ffaktiski copy/paste izveidojot savu datubāzi) Jā. Es esmu nepareizi uzrakstījis endWrokDB un negribu pārrakstīt visu savu kodu. Nokopē kā ir :
+    
         import psycopg2
 
         def startWorkDB():

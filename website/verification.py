@@ -1,5 +1,6 @@
 from functools import wraps
 from flask import session, flash, redirect, url_for, request
+import re
 
 def custom_user_session(user_id, is_admin, remember=False):
     session['user_id'] = user_id
@@ -7,7 +8,7 @@ def custom_user_session(user_id, is_admin, remember=False):
 
     if remember:
         session['remember'] = True
-    
+
     session.modified = True
 
 def custom_logout_user():
@@ -32,6 +33,13 @@ def admin_login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-def replace_special_chars(text):
+def sanitize_and_replace(input_string):
+    #   Sanitize user input to prevent XSS and replace special characters.
+    # Replace special characters
     trans = str.maketrans("ĒĀĪŪ", "EAIU")
-    return text.translate(trans)
+    input_string = input_string.translate(trans)
+    
+    # Remove any character that isn't a word character, a space, or @ . -
+    sanitized = re.sub(r'[^\w\s@.-]', '', input_string)
+    
+    return sanitized

@@ -33,3 +33,13 @@ body {
     justify-content: center;
     align-items: center;
 }
+
+#flashed-message-container {
+    position: fixed;
+    top: 20px; 
+    left: 0;
+    right: 0;
+    z-index: 9999; 
+    visibility: hidden;
+    justify-content: center;
+}

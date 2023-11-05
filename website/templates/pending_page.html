@@ -56,17 +56,17 @@ Uzgaidāmā telpa
                 <td>
                     <div style="display: flex;">
                         <form method="POST" action="/update_car_status" onsubmit="return confirm('Vai vēlaties pievienot ierakstu datubāzei?')" style="margin-right: 10px;">
-                            <input type="hidden" name="car_id" value="{{ row[10] }}">
+                            <input type="hidden" name="car_id" value="{{ row[8] }}">
                             <button class="btn" style="padding: 0; margin: 0;" type="submit">
                                 <i class="bi bi-check-square-fill" style="font-size: 16px; color: green;"></i>
                             </button>
                         </form>  
                         <form method="POST" action="/delete_car" onsubmit="return confirm('Vai vēlaties dzēst ierakstu?')">
-                            <input type="hidden" name="car_id" value="{{ row[10] }}">
+                            <input type="hidden" name="car_id" value="{{ row[8] }}">
                             <button class="btn" style="padding: 0; margin: 0;" type="submit">
                                 <i class="bi bi-trash-fill" style="font-size: 16px; color: red;"></i>
                             </button>
-                        </form>
+                        </form>     
                     </div>
                 </td>
             </tr>
