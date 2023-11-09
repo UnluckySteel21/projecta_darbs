@@ -108,3 +108,10 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
 
     -v0.17
         Pilnveidots stils (Ņemtas vērā pasūtītāja vēlmes. Līdzīgs gala produktam)
+
+9/11/2023
+    -v0.18
+        Nelieli dizaina pilnveidojumi
+        Atmesta doma par aktīvo meklēšanu (search after every key stroke)
+        Kļūdu ziņojumi tiek iemesti txt failā (ļauj sekot līdzi kļūdām)
+        Projekts vairāk vai mazāk gatavs lietošanai

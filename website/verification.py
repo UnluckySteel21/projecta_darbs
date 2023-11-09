@@ -1,10 +1,13 @@
 from functools import wraps
 from flask import session, flash, redirect, url_for, request
 import re
+from datetime import datetime
 
-def custom_user_session(user_id, is_admin, remember=False):
+def custom_user_session(user_id, is_admin, user_name, user_surname, remember=False):
     session['user_id'] = user_id
     session['admin'] = is_admin
+    session['name'] = user_name
+    session['surname'] = user_surname
 
     if remember:
         session['remember'] = True
@@ -14,6 +17,8 @@ def custom_user_session(user_id, is_admin, remember=False):
 def custom_logout_user():
     session.pop('user_id', None)
     session.pop('admin', None)
+    session.pop('name', None)
+    session.pop('surname', None)
 
 def login_required(f):
     @wraps(f)
@@ -43,3 +48,15 @@ def sanitize_and_replace(input_string):
     sanitized = re.sub(r'[^\w\s@.-]', '', input_string)
     
     return sanitized
+
+def writeToDoc(error):
+    with open('documentation\errorMessages.txt', 'r') as file:
+        content = file.read()
+
+    with open('documentation\errorMessages.txt', 'w') as file:
+        file.write('-'*30 + '\n')
+        file.write(session['name'] + session['surname'] + '\n')
+        file.write(str(datetime.now()) + '\n')
+        file.write(f'{error}')
+        file.write('-'*30)
+        file.write(content) 

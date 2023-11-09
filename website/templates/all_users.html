@@ -10,20 +10,30 @@ Visi lietotāji
 
 {% block main_content %}
 <div class="container-fluid">
-    <form method="GET" action="/all_users" style="margin-top: 10px;">
-        <label for="search_field">Meklēt pēc:</label>
-        <select id="search_field" name="search_field">
-            <option value="name">Vārds</option>
-            <option value="surname">Uzvārds</option>
-            <option value="phoneNumber">Telefona numurs</option>
-            <option value="brand">Marka</option>
-            <option value="model">Modelis</option>
-            <option value="carNum">Automašīnas numurs</option>
-            <option value="carVin">Vin numurs</option>
-            <option value="date">Datums</option>
-        </select>
-        <input type="text" id="search_value" name="search_value" placeholder="Ievadi meklējamo vērtību">
-        <input type="submit" value="Search">
+    <form method="GET" action="/all_users" class="form" style="margin-top: 10px;">
+        <div class="row g3 align-items-center">
+            <div class="col-auto">
+                <label for="search_field" class="col-form-label">Meklēt pēc:</label>
+            </div>
+            <div class="col-auto">
+                <select id="search_field" class="form-select form-select-sm" name="search_field">
+                    <option value="name">Vārds</option>
+                    <option value="surname">Uzvārds</option>
+                    <option value="phoneNumber">Telefona numurs</option>
+                    <option value="brand">Marka</option>
+                    <option value="model">Modelis</option>
+                    <option value="carNum">Automašīnas numurs</option>
+                    <option value="carVin">Vin numurs</option>
+                    <option value="date">Datums</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <input type="text" id="search_value" class="form-control form-control-sm" name="search_value" placeholder="Ievadi meklējamo vērtību">
+            </div>
+            <div class="col-auto">
+                <input type="submit" value="Search" class="form-control form-control-sm">
+            </div>
+        </div>
     </form>
     <table class="table table-striped-columns" style="margin-top: 10px; text-align: center;">
         <thead>
@@ -40,14 +50,14 @@ Visi lietotāji
                 <th>Status</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody class="table-group-divider">
             {% for row in data %}
             <tr>
                 <td>{{ row[0] }} {{ row[1] }}</td>
                 <td>{{ row[2] }}</td>
                 <td>{{ row[3] }}</td>
                 <td>{{ row[4] }} {{ row[5] }}</td>
-                <td><button onclick="showDescription(this, '{{ row[11] }}')">Rādīt aprakstu</button> <!-- Add this line -->
+                <td><button class="btn btn-outline-dark" onclick="showDescription(this, '{{ row[11] }}')">Rādīt aprakstu</button> <!-- Add this line -->
                     <div id="desc-{{ row[11] }}" style="display: none;">{{ row[11] }}</div></td>
                 <td>{{ row[6] }}</td>
                 <td>{{ row[7] }}</td>

@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from uuid import uuid4
 from datetime import datetime
 from .database import startWorkDB, endWrokDB
-from .verification import login_required, admin_login_required, sanitize_and_replace
+from .verification import login_required, admin_login_required, sanitize_and_replace, writeToDoc
 
 views = Blueprint('views', __name__)
 
@@ -47,7 +47,8 @@ def new_client():
                     flash('Klients veiksmīgi pievonts!', category='succes')
             
                 except Exception as e:
-                    flash(f'Kaut kas nogāja greizi: {e}', category='error')
+                    flash('Kaut kas nogāja greizi', category='error')
+                    writeToDoc(e)
 
             else:
                 try:
@@ -64,10 +65,12 @@ def new_client():
                     flash('Klients veiksmīgi pievonts!', category='succes')
             
                 except Exception as e:
-                    flash(f'Kaut kas nogāja greizi: {e}', category='error')
+                    flash('Kaut kas nogāja greizi', category='error')
+                    writeToDoc(e)
 
         except Exception as e:
-            flash(f'Kaut kas nogāja greizi: {e}', category='error')
+            flash('Kaut kas nogāja greizi', category='error')
+            writeToDoc(e)
         
         finally:
             endWrokDB(conn)
@@ -131,18 +134,18 @@ def all_users():
         data = cur.fetchall()
 
     except Exception as e:
-        flash(f'Kaut kas nogāja greizi: {e}', category='error')
+        flash('Kaut kas nogāja greizi', category='error')
+        writeToDoc(e)
 
     finally:
         endWrokDB(conn)
 
     return render_template("all_users.html", data=data)
 
-@views.route('/pending_page', methods = ['GET'])
+@views.route('/pending_page', methods=['GET'])
 @admin_login_required
 def pending_page():
-    # the pending page for users whos status is false (work unfinished)
-    # Mapping form values to database column names (tying to prevent sql injections)
+    # Mapping form values to database column names (trying to prevent sql injections)
     column_mapping = {
         "name": "person.name",
         "surname": "person.surname",
@@ -154,49 +157,50 @@ def pending_page():
         "date": "car.date"
     }
 
+    # Get search parameters from the request
     search_field = request.args.get('search_field', None)
     search_value = request.args.get('search_value', None)
+
+    # Initialize query and params
+    query = """SELECT person.name, person.surname, person.email, person.phoneNumber, 
+               car.brand, car.model, car.carNum, car.carVin, car.id, car.date, car.status, car.description 
+               FROM person 
+               INNER JOIN car ON person.id = car.person_id
+               WHERE car.status = false"""
+    params = []
 
     # Check if the search field exists in the column mapping
     if search_field is not None:
         if search_field in column_mapping:
             search_field = column_mapping[search_field]
+            if search_value is not None:
+                search_value = sanitize_and_replace(search_value.upper())
+                query += f" AND {search_field} LIKE %s"
+                params.append(f"%{search_value}%")
         else:
             flash('Nepareizs ievades lauks', category='error')
             return redirect(url_for('views.all_users'))
 
-    if search_value != None:
-        search_value = sanitize_and_replace(search_value.upper())
-
-    data = []
     try:
-        # try so the website keeps running 
+        # Try so the website keeps running 
         conn, cur = startWorkDB()
 
-        query = """SELECT person.name, person.surname, person.email, person.phoneNumber, 
-                   car.brand, car.model, car.carNum, car.carVin, car.id, car.date, car.status, car.description 
-                   FROM person 
-                   INNER JOIN car ON person.id = car.person_id
-                   WHERE car.status = false"""
-
-        params = []
-
-        if search_field and search_value:
-            query += f" AND {search_field} LIKE %s"
-            params.append(f"%{search_value}%")
-
+        # Add ORDER BY clause to the query
         query += " ORDER BY car.date DESC"
         cur.execute(query, params)
 
+        # Fetch data
         data = cur.fetchall()
 
     except Exception as e:
-        flash(f'An error occurred: {e}', category='error')
+        flash('An error occurred', category='error')
+        writeToDoc(e)
+        data = []
 
     finally:
         endWrokDB(conn)
 
-    return render_template("pending_page.html", data = data)
+    return render_template("pending_page.html", data=data)
 
 @views.route('/delete_car', methods=['POST'])
 def delete_car():
@@ -207,10 +211,14 @@ def delete_car():
         cur.execute("DELETE FROM car WHERE id = %s", (car_id,))
         conn.commit()
         flash('Ieraksts veiksmīgi dzēsts', category='success')
+
     except Exception as e:
-        flash(f'Kaut kas nogāja greizi: {e}', category='error')
+        flash('Kaut kas nogāja greizi', category='error')
+        writeToDoc(e)
+
     finally:
         endWrokDB(conn)
+
     return redirect(url_for('views.pending_page'))
 
 @views.route('/update_car_status', methods=['POST'])
@@ -223,8 +231,11 @@ def update_car_status():
         conn, cur = startWorkDB()
         cur.execute("UPDATE car SET status = true WHERE id = %s", (car_id,))
         conn.commit()
+
     except Exception as e:
-        flash(f'Something went wrong: {e}', category='error')
+        flash('Something went wrong', category='error')
+        writeToDoc(e)
+
     finally:
         endWrokDB(conn)
 
@@ -260,15 +271,17 @@ def user_home():
                 return redirect(url_for("auth.login"))
 
         except Exception as e:
-            flash(f'An error occurred: {e}', category='error')
+            flash('An error occurred', category='error')
+            writeToDoc(e)
+
         finally:
             endWrokDB(conn)
+
     else:
         flash('User ID not found in session!', category='error')
         return redirect(url_for("auth.login"))
 
     return render_template("user_home.html", cars=cars)
-
 
 @views.after_request
 def apply_caching(response):

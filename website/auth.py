@@ -1,13 +1,8 @@
-#Importing the standart flask components
-from flask import Blueprint, render_template, request, flash, redirect, url_for, session
-#the self made database functions
-from .database import startWorkDB, endWrokDB
-#uuid for id generation
-from uuid import uuid4
-#password hashing and salting for more security
-from werkzeug.security import generate_password_hash, check_password_hash
-#self made module to check user privileges, session data and input sanitization
-from .verification import custom_logout_user, custom_user_session, login_required, sanitize_and_replace
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session #Importing the standart flask components
+from .database import startWorkDB, endWrokDB #the self made database functions
+from uuid import uuid4 #uuid for id generation
+from werkzeug.security import generate_password_hash, check_password_hash #password hashing and salting for more security
+from .verification import custom_logout_user, custom_user_session, login_required, sanitize_and_replace, writeToDoc #self made module to check user privileges, session data and input sanitization
 
 #def the blueprint
 auth = Blueprint('auth', __name__)
@@ -24,12 +19,14 @@ def login():
             user_data = cur.fetchone()
             cur.execute("SELECT * FROM admins WHERE email = %s", (email,))
             admin_data = cur.fetchone()
+            cur.execute("SELECT name, surname FROM person WHERE email = %s", (email, ))
+            users_name = cur.fetchall()
 
             if admin_data:
                 hashed_password = admin_data[2]
                 if check_password_hash(hashed_password, password):
                     flash('Veiksmīga ielogošanās!', category='success')
-                    custom_user_session(admin_data[0], True, remember=True)
+                    custom_user_session(admin_data[0], True, "Admin", "", remember=True)
                     return redirect(url_for("views.admin_home"))
                 else:
                     flash('Nepareiza parole!', category='error')
@@ -39,7 +36,7 @@ def login():
                 hashed_password = user_data[2]
                 if check_password_hash(hashed_password, password):
                     flash('Veiksmīga ielogošanās!', category='success')
-                    custom_user_session(user_data[0], False, remember=True)
+                    custom_user_session(user_data[0], False, users_name[0], users_name[1], remember=True)
                     print("In session ", user_data[0])
                     return redirect(url_for("views.user_home"))
                 else:
@@ -50,13 +47,13 @@ def login():
             return redirect(url_for("auth.login"))
         
         except Exception as e:
-            flash(f'Kaut kas nogāja greizi! {e}', category='error')
+            flash('Kaut kas nogāja greizi!', category='error')
+            writeToDoc(e)
         
         finally:
             endWrokDB(conn)
 
     return render_template("login.html")
-
 
 @auth.route('/logout')
 @login_required
@@ -108,7 +105,8 @@ def sign_up():
                     return redirect(url_for("auth.login"))
             
             except Exception as e:
-                flash(f'Kaut kas nogāja greizi: {e}', category='error')
+                flash('Kaut kas nogāja greizi', category='error')
+                writeToDoc(e)
             
             finally:
                 endWrokDB(conn)

@@ -1,0 +1,8 @@
+------------------------------
+Admin
+2023-11-09 20:04:56.973538
+syntax error at or near "SELECTS"
+LINE 1: SELECTS person.name, person.surname, person.email, person.ph...
+        ^
+
+------------------------------
