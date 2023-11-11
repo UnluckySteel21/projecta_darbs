@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from uuid import uuid4
 from datetime import datetime
-from .database import startWorkDB, endWrokDB
+from .database import startWorkDB, endWorkDB
 from .verification import login_required, admin_login_required, sanitize_and_replace, writeToDoc
 
 views = Blueprint('views', __name__)
@@ -42,7 +42,7 @@ def new_client():
                     cur.execute("""INSERT
                                 INTO car (id, brand, model, carNum, carVin, date, description, person_id, status)
                                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-                                """, (c_id, c_brand, c_make, c_num, c_vin, now, c_desc, dataPerson[0], "no"))
+                                """, (c_id, c_brand, c_make, c_num, c_vin, now, c_desc, dataPerson[0], "0"))
                     
                     flash('Klients veiksmīgi pievonts!', category='succes')
             
@@ -60,7 +60,7 @@ def new_client():
                     cur.execute("""INSERT
                                 INTO car (id, brand, model, carNum, carVin, date, description, person_id, status)
                                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-                                """, (c_id, c_brand, c_make, c_num, c_vin, now, c_desc, k_id, "no"))
+                                """, (c_id, c_brand, c_make, c_num, c_vin, now, c_desc, k_id, "0"))
 
                     flash('Klients veiksmīgi pievonts!', category='succes')
             
@@ -73,7 +73,7 @@ def new_client():
             writeToDoc(e)
         
         finally:
-            endWrokDB(conn)
+            endWorkDB(conn)
 
         return render_template("new_client.html")
     else:
@@ -138,7 +138,7 @@ def all_users():
         writeToDoc(e)
 
     finally:
-        endWrokDB(conn)
+        endWorkDB(conn)
 
     return render_template("all_users.html", data=data)
 
@@ -198,11 +198,12 @@ def pending_page():
         data = []
 
     finally:
-        endWrokDB(conn)
+        endWorkDB(conn)
 
     return render_template("pending_page.html", data=data)
 
 @views.route('/delete_car', methods=['POST'])
+@admin_login_required
 def delete_car():
     # deletes a row from the database (possible only if status is false)
     car_id = request.form.get('car_id')
@@ -217,7 +218,7 @@ def delete_car():
         writeToDoc(e)
 
     finally:
-        endWrokDB(conn)
+        endWorkDB(conn)
 
     return redirect(url_for('views.pending_page'))
 
@@ -233,11 +234,11 @@ def update_car_status():
         conn.commit()
 
     except Exception as e:
-        flash('Something went wrong', category='error')
+        flash('Kaut kas nogāja greizi!', category='error')
         writeToDoc(e)
 
     finally:
-        endWrokDB(conn)
+        endWorkDB(conn)
 
     return redirect(url_for('views.pending_page'))
 
@@ -264,21 +265,21 @@ def user_home():
                 user_id = user_data[0]  # Update user_id with the retrieved user's ID
 
                 # Now, you can use the updated user_id to fetch the cars associated with the user
-                cur.execute("SELECT * FROM car WHERE person_id = %s", (user_id,))
+                cur.execute("SELECT * FROM car WHERE person_id = %s ORDER BY date DESC", (user_id,))
                 cars = cur.fetchall()
             else:
-                flash('User not found!', category='error')
+                flash('Lietotājs nav atrasts!', category='error')
                 return redirect(url_for("auth.login"))
 
         except Exception as e:
-            flash('An error occurred', category='error')
+            flash('Kaut kas nogāja greizi!', category='error')
             writeToDoc(e)
 
         finally:
-            endWrokDB(conn)
+            endWorkDB(conn)
 
     else:
-        flash('User ID not found in session!', category='error')
+        flash('Lietotāja ID nav atrasts sesijā!', category='error')
         return redirect(url_for("auth.login"))
 
     return render_template("user_home.html", cars=cars)

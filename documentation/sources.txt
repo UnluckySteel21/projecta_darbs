@@ -1,0 +1,27 @@
+ChatGPT (Periodiski lietots visa darba gaitā)
+
+https://www.youtube.com/watch?v=dam0GPOAvVI&t=7051s (19/10/2023)
+https://getbootstrap.com/docs/5.3/getting-started/introduction (19/10/2023)
+https://icons.getbootstrap.com (19/10/2023)
+https://flask.palletsprojects.com/en/3.0.x/ (19/10/2023)
+
+https://www.freepik.com/ai/images (22/10/2023)
+
+https://stackoverflow.com/questions/43840352/flask-admin-how-to-make-a-query-according-to-the-current-users-id-and-role (24/10/2023)
+https://www.postgresql.org/docs/16/index.html (24/10/2023)
+
+https://stackoverflow.com/questions/37004983/what-exactly-is-werkzeug (28/10/2023)
+
+https://stackoverflow.com/questions/20503183/python-flask-working-with-wraps (29/01/2023)
+https://www.geeksforgeeks.org/how-to-use-flask-session-in-python-flask (29/01/2023)
+
+https://www.youtube.com/watch?v=k7n90A9X8C8 (4/11/2023)
+
+https://www.youtube.com/watch?v=_x_LoGzDL9I (5/11/2023)
+
+https://medium.com/swlh/how-to-host-your-flask-app-on-pythonanywhere-for-free-df8486eb6a42 (9/11/2023)
+
+https://dev.mysql.com/doc (11/11/2023)
+https://www.youtube.com/watch?v=VK4nTHqbcMg (11/11/2023)
+https://www.youtube.com/watch?v=MhaH7o3lf4E&t=687s (11/11/2023)
+https://www.youtube.com/watch?v=MhaH7o3lf4E (11/11/2023)

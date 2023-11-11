@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session #Importing the standart flask components
-from .database import startWorkDB, endWrokDB #the self made database functions
+from .database import startWorkDB, endWorkDB #the self made database functions
 from uuid import uuid4 #uuid for id generation
 from werkzeug.security import generate_password_hash, check_password_hash #password hashing and salting for more security
 from .verification import custom_logout_user, custom_user_session, login_required, sanitize_and_replace, writeToDoc #self made module to check user privileges, session data and input sanitization
@@ -36,8 +36,7 @@ def login():
                 hashed_password = user_data[2]
                 if check_password_hash(hashed_password, password):
                     flash('Veiksmīga ielogošanās!', category='success')
-                    custom_user_session(user_data[0], False, users_name[0], users_name[1], remember=True)
-                    print("In session ", user_data[0])
+                    custom_user_session(user_data[0], False, users_name[0][0], users_name[0][1], remember=True)
                     return redirect(url_for("views.user_home"))
                 else:
                     flash('Nepareiza parole!', category='error')
@@ -51,7 +50,7 @@ def login():
             writeToDoc(e)
         
         finally:
-            endWrokDB(conn)
+            endWorkDB(conn)
 
     return render_template("login.html")
 
@@ -93,7 +92,7 @@ def sign_up():
                 cur.execute("SELECT * FROM logindata WHERE email LIKE %s", (email,))
                 UsedData = cur.fetchone()
                 if notUsedData is None or notUsedData[1] != firstName or notUsedData[2] != lastName:
-                    flash('Invalid user data!', category='error')
+                    flash('Nepareizi lietotāja dati!', category='error')
                 elif UsedData is None:
                     loginID = str(uuid4())
                     password = generate_password_hash(password1, method='pbkdf2:sha256')
@@ -109,7 +108,7 @@ def sign_up():
                 writeToDoc(e)
             
             finally:
-                endWrokDB(conn)
+                endWorkDB(conn)
         
         return render_template("sign_up.html")
     else:

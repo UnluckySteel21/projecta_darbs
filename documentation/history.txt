@@ -102,7 +102,7 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
         Major bug fix!!! Pēc mana pēdējās versijas (-v0.15) SQL pieprasījumi nebija veiksmīgi, ja nebija nekādu ievaddatu
         Pilnībā izveidota un sakārtota user interface puse
         Atrisināta loģikas kļūda datubāzes heirarhijā
-        Nonācu pie secinājuma, ka esmu uzrakstījis endWrokDB funkciju nepareizi. iespējams kādreiz vajadzētu salabot.
+        Nonācu pie secinājuma, ka esmu uzrakstījis endWorkDB funkciju nepareizi. iespējams kādreiz vajadzētu salabot. (salabots (11/11/2023))
         Flash paziņojumu modifikācija (paši aizveras pēc kāda laika un nestumj lapas saturu uz leju)
         Jauna funkcija verification.py, kas aizstāj potenciāli bīstamus ievaddatus.
 
@@ -115,3 +115,9 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
         Atmesta doma par aktīvo meklēšanu (search after every key stroke)
         Kļūdu ziņojumi tiek iemesti txt failā (ļauj sekot līdzi kļūdām)
         Projekts vairāk vai mazāk gatavs lietošanai
+
+11/11/2023
+    -v0.19
+        Viss darbs tika tulkots uz mySQL, lai varētu hostot to pythonanywhere lapām
+        Izietas visas pirms-publicēšanas pārbaudes. Klients apmierināts ar darbu.
+        Tiek apsvērta doma pievienot tulkošanas funkciju un logo (nav izstrādāta pat skice)

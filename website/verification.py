@@ -55,8 +55,8 @@ def writeToDoc(error):
 
     with open('documentation\errorMessages.txt', 'w') as file:
         file.write('-'*30 + '\n')
-        file.write(session['name'] + session['surname'] + '\n')
+        file.write(session['name'] + ' ' + session['surname'] + '\n')
         file.write(str(datetime.now()) + '\n')
         file.write(f'{error}')
-        file.write('-'*30)
+        file.write('\n' + '-'*30)
         file.write(content) 
