@@ -1,29 +1,32 @@
 # Projecta Darbs
 
-When cloning the project, you need to:
+Klonējot darbu jums nepieciešams:
 
-1. Create your own `venv` directory (it should be located next to the `website` directory, not inside it).
-    - Start of like this:
+1. Izveidot savu `venv` direktoriju (tam jāatrodas blakus jūsu `website` direktorijam, nevis tajā iekšā).
+    - Lai to izdarītu sāciet ar komandas ierakstīšanu:
     ```cmd
     py -m venv venv
     ```
-    - And activate venv using:
+    - Tālāk aktivizējiet `venv`:
     ```cmd
     venv\scripts\activate.bat
     ```
 
-2. Install the requirments:
+2. Ieinstallējiet nepieciešamās bibliotēkas:
     ```cmd
     pip install -r documentation\requirments.txt
     ```
 
-3. Inside the `website` directory create a `.env` file, in which you need to specify:
-    - `SECRET_KEY`: For example, `SECRET_KEY = "#your_secret_key_here"`
-    - `FLASK_ENV`: For example, `FLASK_ENV = "development"`
-    - `MAINTENANCE_MODE`: For example, `MAINTENANCE_MODE = "False"` or `MAINTENANCE_MODE = "True"`
+3. Iekšā `website` direktorijā izveidojiet `.env` failu, kurā norādiet:
+    - `SECRET_KEY`: Piemēram, `SECRET_KEY = "#your_secret_key_here"`
+    - `FLASK_ENV`: Piemēram, `FLASK_ENV = "development"`
+    - `MAINTENANCE_MODE`: Piemēram, `MAINTENANCE_MODE = "False"` vai `MAINTENANCE_MODE = "True"`
 
-4. Create a `database.py` file following this principle (basically copy/paste when creating your own database). 
-    - So far, the code works with PostgreSQL:
+4. Izveidojiet `database.py` failu kurā faktiski nokopēsiet apakšā redzamo kodu. Jums nāksies pielāgot failu atbilstoši jūsu datubāzei. Sākotnēji kods bijis paredzēts postgreSQL datubāzei, bet vēlāk pārveidots tā, lai darbotos arī ar mySQL. 
+    - Ja vēlaties izmantot postgreSQL (Būs manuāli jāpieinstalē bibliotēka):
+    ```cmd
+    pip install psycopg2
+    ```
 
     ```python
     import psycopg2
@@ -93,9 +96,9 @@ When cloning the project, you need to:
         conn.commit()
         conn.close()
     ```
-    - Or as an alternative you can use mySQL:
+    - Ja plānojat izmantot mySQL:
 
-    ```pyhton
+    ```python
     import mysql.connector
     
     def startWorkDB():
