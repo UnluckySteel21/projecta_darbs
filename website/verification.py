@@ -39,10 +39,12 @@ def admin_login_required(f):
     return decorated_function
 
 def sanitize_and_replace(input_string):
-    #   Sanitize user input to prevent XSS and replace special characters.
     # Replace special characters
     trans = str.maketrans("ĒĀĪŪ", "EAIU")
     input_string = input_string.translate(trans)
+    
+    # Replace newline characters with a space
+    input_string = input_string.replace('\n', ' ')
     
     # Remove any character that isn't a word character, a space, or @ . -
     sanitized = re.sub(r'[^\w\s@.-]', '', input_string)

@@ -9,35 +9,47 @@ Lietotāja infolapa
 
 {% block main_content %}
 <div class="container-fluid">
-    <table class="table table-striped-columns" style="margin-top: 10px; text-align: center;">
-        <thead>
-            <tr>
-                <th>Marka, Modelis</th>
-                <th>Datums</th>
-                <th>Numurs</th>
-                <th>Vin</th>
-                <th>Status</th>
-                <th>Apraksts</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for car in cars %}
+    <div class="row">
+        <div class="col-md-12">
+            <form action="/notes" class="d-inline">
+                <button type="submit" class="btn btn-light">Atstāt vai skatīt piezīmes</button>
+            </form>
+            <form action="page2.html" class="d-inline">
+                <button type="submit" class="btn btn-light">Pieteikties uz autoservisa apmeklējumu</button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table table-striped-columns" style="margin-top: 20px; text-align: center;">
+            <thead>
                 <tr>
-                    <td>{{ car[1] }} {{ car[2] }}</td>
-                    <td>{{ car[5] }}</td>
-                    <td>{{ car[3] }}</td>
-                    <td>{{ car[4] }}</td>
-                    <td>
-                        {% if car[8] %}
-                            <i class="bi bi-check-square-fill" style="color: green;"></i>
-                        {% else %}
-                            <i class="bi bi-x-square-fill" style="color: red;"></i>
-                        {% endif %}
-                    </td>
-                    <td>{{ car[6] }}</td>
+                    <th>Marka, Modelis</th>
+                    <th>Datums</th>
+                    <th>Numurs</th>
+                    <th>Vin</th>
+                    <th>Status</th>
+                    <th>Apraksts</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for car in cars %}
+                    <tr>
+                        <td>{{ car[1] }} {{ car[2] }}</td>
+                        <td>{{ car[5] }}</td>
+                        <td>{{ car[3] }}</td>
+                        <td>{{ car[4] }}</td>
+                        <td>
+                            {% if car[8] %}
+                                <i class="bi bi-check-square-fill" style="color: green;"></i>
+                            {% else %}
+                                <i class="bi bi-x-square-fill" style="color: red;"></i>
+                            {% endif %}
+                        </td>
+                        <td>{{ car[6] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

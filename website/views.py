@@ -163,7 +163,7 @@ def pending_page():
 
     # Initialize query and params
     query = """SELECT person.name, person.surname, person.email, person.phoneNumber, 
-               car.brand, car.model, car.carNum, car.carVin, car.id, car.date, car.status, car.description 
+               car.brand, car.model, car.carNum, car.carVin, car.id, car.date, car.status, car.description, person.description
                FROM person 
                INNER JOIN car ON person.id = car.person_id
                WHERE car.status = false"""
@@ -179,7 +179,7 @@ def pending_page():
                 params.append(f"%{search_value}%")
         else:
             flash('Nepareizs ievades lauks', category='error')
-            return redirect(url_for('views.all_users'))
+            return redirect(url_for('views.pending_page'))
 
     try:
         # Try so the website keeps running 
@@ -191,6 +191,8 @@ def pending_page():
 
         # Fetch data
         data = cur.fetchall()
+        for row in data:
+            print(row[12])
 
     except Exception as e:
         flash('An error occurred', category='error')
@@ -231,7 +233,6 @@ def update_car_status():
     try:
         conn, cur = startWorkDB()
         cur.execute("UPDATE car SET status = true WHERE id = %s", (car_id,))
-        conn.commit()
 
     except Exception as e:
         flash('Kaut kas nogāja greizi!', category='error')
@@ -283,6 +284,59 @@ def user_home():
         return redirect(url_for("auth.login"))
 
     return render_template("user_home.html", cars=cars)
+
+@views.route('/notes', methods=['GET', 'POST'])
+@login_required
+def notes():
+    user_id = session.get('user_id')
+    data = ""
+    if request.method == 'POST':
+        try:
+            conn, cur = startWorkDB()
+
+            cur.execute("SELECT person.id FROM person JOIN logindata ON person.email = logindata.email WHERE logindata.id = %s", (user_id,))
+            user_data = cur.fetchone()
+            if user_data:
+                user_id = user_data[0]  # Extract the user ID from the tuple
+                newData = sanitize_and_replace(request.form.get("repair_specification"))
+                cur.execute("UPDATE person SET description = %s WHERE id = %s", (newData, user_id,))
+            else:
+                flash('Kaut kas nogāja greizi. Lietotājs nav atrasts.', category='error')
+                return redirect(url_for("auth.login"))
+
+        except Exception as e:
+            flash('Kaut kas nogāja greizi!', category='error')
+            writeToDoc(e)
+
+        finally:
+            endWorkDB(conn)
+            return redirect(url_for("views.user_home"))
+    else:
+        try:
+            conn, cur = startWorkDB()
+            cur.execute("SELECT person.id FROM person JOIN logindata ON person.email = logindata.email WHERE logindata.id = %s", (user_id,))
+            user_data = cur.fetchone()
+
+            if user_data:
+                user_id = user_data[0]  # Extract the user ID from the tuple
+                cur.execute("SELECT description FROM person WHERE id = %s", (user_id, ))
+                result = cur.fetchone()
+
+                if result:
+                    data = result[0].strip().replace('\r\n', '')
+                else:
+                    data = ""  # Set a default value if no data is found
+            else:
+                flash('Kaut kas nogāja greizi. Nevar atrast lietotāju.', category='error')
+                return redirect(url_for("auth.login"))
+
+        except Exception as e:
+            flash('Kaut kas nogāja greizi!', category='error')
+            writeToDoc(e)
+
+        finally:
+            endWorkDB(conn)
+            return render_template("user_notes.html", data=data)
 
 @views.after_request
 def apply_caching(response):

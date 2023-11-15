@@ -44,6 +44,7 @@ Uzgaidāmā telpa
                 <th>Telefona numurs</th>
                 <th>Marka, Modelis</th>
                 <th>Apraksts</th>
+                <th>Klienta apraksts</th>
                 <th>Numurs</th>
                 <th>Vin</th>
                 <th>Pakalpojuma ID</th>
@@ -60,6 +61,10 @@ Uzgaidāmā telpa
                 <td>{{ row[4] }} {{ row[5] }}</td>
                 <td><button class="btn btn-outline-dark" onclick="showDescription(this, '{{ row[11] }}')">Rādīt aprakstu</button> <!-- Add this line -->
                     <div id="desc-{{ row[11] }}" style="display: none;">{{ row[11] }}</div></td>
+                <td>    
+                    <button class="btn btn-outline-dark" onclick="showDescription(this, '{{ row[12] }}')">Rādīt aprakstu</button>
+                    <div id="desc-{{ row[12] }}" style="display: none;">{{ row[12] }}</div>
+                </td>
                 <td>{{ row[6] }}</td>
                 <td>{{ row[7] }}</td>
                 <td>{{ row[8] }}</td>

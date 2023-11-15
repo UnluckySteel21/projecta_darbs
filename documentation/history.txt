@@ -121,3 +121,17 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
         Viss darbs tika tulkots uz mySQL, lai varētu hostot to pythonanywhere lapām
         Izietas visas pirms-publicēšanas pārbaudes. Klients apmierināts ar darbu.
         Tiek apsvērta doma pievienot tulkošanas funkciju un logo (nav izstrādāta pat skice)
+    
+12/11/2023
+    Darbs tika hostots un pythonanywhere serveriem un palaists testa režīmā.
+
+15/11/2023
+    Atgriezeniskā saite:
+        Klients apmierināts ar programmu tiktāl.
+        Pieprasījums pēc jaunām funkcionalitātēm:
+            Iespēja autoservisa klientiem pieteikt remontu elektroniski
+            Nodrošināt klientiem veidot piezīmes par savu automašīnu, kas redzamas mehāniķim.
+        Potenciāli dizaina risinājumi.
+
+    -v1.1
+        Iespēja pievienot ziņas arī klientam

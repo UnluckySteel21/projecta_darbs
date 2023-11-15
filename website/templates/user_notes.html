@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block page_title %}
+Lietotāja piezīmes
+{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid">
+    <div class="row">
+        <h3>Šeit jūs varat atstāt piezīmes, kas būs redzamas arī automehāniķim.</h3>
+    </div>
+    <div class="row">
+        <form method="post">
+            <textarea 
+                style="margin-top: 20px;"
+                class="form-control h-100" 
+                id="repair_specification" 
+                name="repair_specification" 
+                rows="10">{{data}}
+            </textarea>
+            <input value="Iesniegt" type="submit" name="submit" id="submit" class="btn btn-light" style="margin-top: 10px;">
+        </form>
+    </div>
+</div>
+{% endblock %}
