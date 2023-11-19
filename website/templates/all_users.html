@@ -10,7 +10,7 @@ Visi lietotāji
 
 {% block main_content %}
 <div class="container-fluid">
-    <form method="GET" action="/all_users" class="form" style="margin-top: 10px;">
+    <form method="GET" action="/search_users" class="form" style="margin-top: 10px;">
         <div class="row g3 align-items-center">
             <div class="col-auto">
                 <label for="search_field" class="col-form-label">Meklēt pēc:</label>
@@ -73,7 +73,7 @@ Visi lietotāji
             </tr>
             {% else %}
             <tr>
-                <td colspan="10">
+                <td colspan="11">
                     Nav datu!
                 </td>
             </tr>

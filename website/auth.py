@@ -2,53 +2,47 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from .database import startWorkDB, endWorkDB #the self made database functions
 from uuid import uuid4 #uuid for id generation
 from werkzeug.security import generate_password_hash, check_password_hash #password hashing and salting for more security
-from .verification import custom_logout_user, custom_user_session, login_required, sanitize_and_replace, writeToDoc #self made module to check user privileges, session data and input sanitization
-
+from .verification import custom_logout_user, custom_user_session, login_required, sanitize_and_replace #self made module to check user privileges, session data and input sanitization
+from .viewsFunctions import writeToDoc
 #def the blueprint
 auth = Blueprint('auth', __name__)
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
+    """
+    Handles user login. If the user is an admin, they are redirected to the admin home page.
+    If the user is not an admin, they are redirected to the user home page.
+    """
     if request.method == 'POST':
         email = sanitize_and_replace(request.form.get('email'))
         password = sanitize_and_replace(request.form.get('password'))
-        
+
         try:
             conn, cur = startWorkDB()
-            cur.execute("SELECT * FROM logindata WHERE email = %s", (email,))
+            cur.execute("SELECT * FROM person WHERE email LIKE %s", (email,))
             user_data = cur.fetchone()
-            cur.execute("SELECT * FROM admins WHERE email = %s", (email,))
+            cur.execute("SELECT * FROM admins WHERE email LIKE  %s", (email,))
             admin_data = cur.fetchone()
-            cur.execute("SELECT name, surname FROM person WHERE email = %s", (email, ))
-            users_name = cur.fetchall()
+            print(user_data)
 
-            if admin_data:
-                hashed_password = admin_data[2]
-                if check_password_hash(hashed_password, password):
-                    flash('Veiksmīga ielogošanās!', category='success')
-                    custom_user_session(admin_data[0], True, "Admin", "", remember=True)
-                    return redirect(url_for("views.admin_home"))
-                else:
-                    flash('Nepareiza parole!', category='error')
-                    return redirect(url_for("auth.login"))
-            
-            if user_data:
-                hashed_password = user_data[2]
-                if check_password_hash(hashed_password, password):
-                    flash('Veiksmīga ielogošanās!', category='success')
-                    custom_user_session(user_data[0], False, users_name[0][0], users_name[0][1], remember=True)
-                    return redirect(url_for("views.user_home"))
-                else:
-                    flash('Nepareiza parole!', category='error')
-                    return redirect(url_for("auth.login"))
-            
+            if admin_data and check_password_hash(admin_data[2], password):
+                flash('Veiksmīga ielogošanās!', category='success')
+                custom_user_session(admin_data[0], True, "Admin", "", remember=True)
+                return redirect(url_for("views.admin_home"))
+
+            if user_data and check_password_hash(user_data[3], password):
+                flash('Veiksmīga ielogošanās!', category='success')
+                custom_user_session(user_data[0], False, user_data[1], user_data[2], remember=True)
+                #print(user_data[0][1], user_data[0][2])
+                return redirect(url_for("views.user_home"))
+
             flash('Lietotājs nav atrasts! Pārbaudiet vai pareizi ievadīts epasts!', category='error')
             return redirect(url_for("auth.login"))
-        
+
         except Exception as e:
             flash('Kaut kas nogāja greizi!', category='error')
             writeToDoc(e)
-        
+
         finally:
             endWorkDB(conn)
 
@@ -63,56 +57,53 @@ def logout():
 
 @auth.route('/sign_up', methods=['GET', 'POST'])
 def sign_up():
-    #function for signup
+    """
+    Sign-up form, lets users make an account
+    """
     if request.method == 'POST':
-        #sanitizes user input
         email = sanitize_and_replace(request.form.get('email'))
         firstName = sanitize_and_replace(request.form.get('firstName').upper())
         lastName = sanitize_and_replace(request.form.get('lastName').upper())
+        phoneNum = sanitize_and_replace(request.form.get('phoneNum').upper())
         password1 = sanitize_and_replace(request.form.get('password1'))
         password2 = sanitize_and_replace(request.form.get('password2'))
 
-        #basic requirments (might do this in javascript on the user end instead. Idk yet)
-        if len(email) < 4:
-            flash('Epasta adresei jābūt garākai par 4 simboliem!', category='error')
-        elif len(firstName) < 2:
-            flash('Vārdam jābūt garākam par 2 simboliem!', category='error')
-        elif len(lastName) < 2:
-            flash('Uzvārdam jābūt garākam par 2 simboliem!', category='error')
-        elif len(password1) < 7:
-            flash('Parolei jābūt garākai par 7 simboliem!', category='error')
-        elif password1 != password2:
-            flash('Paroles nav vienādas!', category='error')
+        if len(email) < 4 or len(firstName) < 2 or len(lastName) < 2 or len(password1) < 7 or password1 != password2:
+            flash('Please check your input!', category='error')
         else:
             try:
-                #using try so the website keeps running in case of database failure.
                 conn, cur = startWorkDB()
                 cur.execute("SELECT * FROM person WHERE email LIKE %s", (email,))
-                notUsedData = cur.fetchone()
-                cur.execute("SELECT * FROM logindata WHERE email LIKE %s", (email,))
                 UsedData = cur.fetchone()
-                if notUsedData is None or notUsedData[1] != firstName or notUsedData[2] != lastName:
-                    flash('Nepareizi lietotāja dati!', category='error')
-                elif UsedData is None:
+
+                if UsedData is not None and UsedData[3] != None:
+                    flash('Email already in use!', category='error')
+                elif UsedData[3] == None:
+                    password = generate_password_hash(password1, method='pbkdf2:sha256')
+                    cur.execute("""UPDATE person
+                                SET password = %s
+                                WHERE email LIKE %s""",
+                                (password, email))
+                    flash('Konts veiksmigi izveidots!', category='success')
+                    return redirect(url_for("auth.login"))
+                else:
                     loginID = str(uuid4())
                     password = generate_password_hash(password1, method='pbkdf2:sha256')
                     cur.execute("""INSERT
-                                INTO logindata (id, email, password, admin)
-                                VALUES (%s, %s, %s, %s)
-                                """, (loginID, email, password, False))
-                    flash('Konts izveidots!', category='succes')
+                                INTO person (id, name, surname, password, email, admin, phoneNumber)
+                                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                                """, (loginID, firstName, lastName, password, email, "0", phoneNum))
+                    flash('Account created!', category='success')
                     return redirect(url_for("auth.login"))
-            
+
             except Exception as e:
-                flash('Kaut kas nogāja greizi', category='error')
+                flash('Something went wrong!', category='error')
                 writeToDoc(e)
-            
+
             finally:
                 endWorkDB(conn)
-        
-        return render_template("sign_up.html")
-    else:
-        return render_template("sign_up.html")
+
+    return render_template("sign_up.html")
     
 @auth.after_request
 def apply_caching(response):

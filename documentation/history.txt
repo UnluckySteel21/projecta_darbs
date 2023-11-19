@@ -134,4 +134,12 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
         Potenciāli dizaina risinājumi.
 
     -v1.1
-        Iespēja pievienot ziņas arī klientam
+        Iespēja pievienot ziņas arī klientam, pieprasījuma realizācija.
+
+19/11/2023
+    -v1.2
+        MAJOR UPDATE!!!
+        Uzlabota reģistrācija loģika, tagad jebkurš var izveidot kontu.
+        Diemžēl procesa laikā salūza klienta piezīmju darbība.
+        Liela koda optimizācija, komentāru pievienošana.
+        Pēc ilgiem mēģinājumiem esmu atmetis domu par lietotāju verifikāciju (pagaidām)

@@ -1,7 +1,6 @@
 from functools import wraps
 from flask import session, flash, redirect, url_for, request
 import re
-from datetime import datetime
 
 def custom_user_session(user_id, is_admin, user_name, user_surname, remember=False):
     session['user_id'] = user_id
@@ -47,18 +46,5 @@ def sanitize_and_replace(input_string):
     input_string = input_string.replace('\n', ' ')
     
     # Remove any character that isn't a word character, a space, or @ . -
-    sanitized = re.sub(r'[^\w\s@.-]', '', input_string)
-    
-    return sanitized
-
-def writeToDoc(error):
-    with open('documentation\errorMessages.txt', 'r') as file:
-        content = file.read()
-
-    with open('documentation\errorMessages.txt', 'w') as file:
-        file.write('-'*30 + '\n')
-        file.write(session['name'] + ' ' + session['surname'] + '\n')
-        file.write(str(datetime.now()) + '\n')
-        file.write(f'{error}')
-        file.write('\n' + '-'*30)
-        file.write(content) 
+    sanitized = re.sub(r'[^\w\s@.-]|[\n]', '', input_string)    
+    return sanitized 

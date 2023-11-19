@@ -9,65 +9,41 @@ Pierakstīšanās
 
 {% block main_content %}
 <div class="centered-content">
-    <form 
-        method="POST"
-        class="container"
-        accept-charset="UTF-8">
-        <h3 class="text-center"> Piereģistrēties </h3>
+    <form action="/sign_up" method="POST" class="container" accept-charset="UTF-8">
+        <h3 class="text-center">Piereģistrēties</h3>
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="email">Epasta adrese</label>
-                    <input 
-                        type="email" 
-                        class="form-control" 
-                        id="email" 
-                        name="email" 
-                        placeholder="Ievadi epasta adresi">
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Ievadi epasta adresi">
                 </div>
                 <div class="form-group">
                     <label for="firstName">Vārds</label>
-                    <input 
-                        type="text" 
-                        class="form-control" 
-                        id="firstName" 
-                        name="firstName" 
-                        placeholder="Ievadi savu vārdu">
+                    <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Ievadi savu vārdu">
                 </div>
                 <div class="form-group">
                     <label for="lastName">Uzvārds</label>
-                    <input 
-                        type="text" 
-                        class="form-control" 
-                        id="lastName" 
-                        name="lastName" 
-                        placeholder="Ievadi savu uzvārdu">
+                    <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Ievadi savu uzvārdu">
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Telefona numurs</label>
+                    <input type="text" class="form-control" id="phoneNum" name="phoneNum" placeholder="Ievadi savu telefona numuru">
                 </div>
                 <div class="form-group">
                     <label for="password1">Parole</label>
-                    <input 
-                        type="password" 
-                        class="form-control" 
-                        id="password1" 
-                        name="password1" 
-                        placeholder="Ievadi savu paroli">
+                    <input type="password" class="form-control" id="password1" name="password1" placeholder="Ievadi savu paroli">
                 </div>
                 <div class="form-group">
                     <label for="password2">Apstiprini paroli</label>
-                    <input 
-                        type="password" 
-                        class="form-control" 
-                        id="password2" 
-                        name="password2" 
-                        placeholder="Atkārtoti ievadi savu paroli">
+                    <input type="password" class="form-control" id="password2" name="password2" placeholder="Atkārtoti ievadi savu paroli">
                 </div>
                 <br>
                 <p>Jau ir konts? <a href="/login" class="link-light">Ielogojies!</a></p>
-                <button 
-                    type="submit"
-                    class="btn btn-light d-block mx-auto">
-                    Iesniegt
-                </button>
+                <div class="row text-center">
+                    <div class="col">
+                        <button type="submit" class="btn btn-primary">Piereģistrēties</button>
+                    </div>
+                </div>
             </div>
         </div>
     </form>
