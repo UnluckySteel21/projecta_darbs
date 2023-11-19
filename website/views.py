@@ -3,7 +3,7 @@ from uuid import uuid4
 from datetime import datetime
 from .database import startWorkDB, endWorkDB
 from .verification import login_required, admin_login_required, sanitize_and_replace
-from .viewsFunctions import get_users, get_pending_users, writeToDoc
+from .viewsFunctions import writeToDoc
 
 views = Blueprint('views', __name__)
 
@@ -81,25 +81,178 @@ def new_client():
 @views.route('/all_users')
 @admin_login_required
 def all_users():
-    data = get_users()
+    data = []
+    try:
+        conn, cur = startWorkDB()
+        cur.execute("""SELECT
+                    person.name,
+                    person.surname,
+                    person.email,
+                    person.phoneNumber,
+                    person.description,
+                    car.brand,
+                    car.model,
+                    car.carNum,
+                    car.carVin,
+                    car.date,
+                    car.description,
+                    car.status,
+                    car.id
+                    FROM person
+                    INNER JOIN car ON person.id = car.person_id
+                    ORDER BY car.date DESC""")
+        data = cur.fetchall()
+
+    except Exception as e:
+        writeToDoc(e)
+        flash('Kaut kas nogāja greizi!', category='error')
+    
+    finally:
+        endWorkDB(conn)
+
     return render_template("all_users.html", data=data)
 
-@views.route('/search_users')
+@views.route('/search_users', methods = ['POST'])
 @admin_login_required
 def search_users():
-    search_field = request.args.get('search_field', None)
-    search_value = request.args.get('search_value', None)
-    data = get_users(search_field, search_value)
+    searchField = sanitize_and_replace(request.form.get("search_field"))
+    searchValue = sanitize_and_replace(request.form.get("search_value"))
+    data = []
+
+    column_mapping = {
+        "name": "person.name",
+        "surname": "person.surname",
+        "phoneNumber": "person.phoneNumber",
+        "brand": "car.brand",
+        "model": "car.model",
+        "carNum": "car.carNum",
+        "carVin": "car.carVin",
+        "date": "car.date"
+    }
+
+    if searchField in column_mapping:
+        searchField = column_mapping[searchField]
+        try:
+            conn, cur = startWorkDB()
+            cur.execute(f"""
+                    SELECT
+                        person.name,
+                        person.surname,
+                        person.email,
+                        person.phoneNumber,
+                        person.description,
+                        car.brand,
+                        car.model,
+                        car.carNum,
+                        car.carVin,
+                        car.date,
+                        car.description,
+                        car.status,
+                        car.id
+                    FROM person
+                    INNER JOIN car ON person.id = car.person_id
+                    AND {searchField} LIKE '%{searchValue}%'
+                    ORDER BY car.date DESC""")
+            
+            data = cur.fetchall()
+        
+        except Exception as e:
+            writeToDoc(e)
+            flash('Kaut kas nogāja greizi!', category='error')
+        
+        finally:
+            endWorkDB(conn)
+    
     return render_template("all_users.html", data=data)
 
 @views.route('/pending_page', methods=['GET'])
 @admin_login_required
 def pending_page():
     # Get search parameters from the request
-    search_field = request.args.get('search_field', None)
-    search_value = request.args.get('search_value', None)
+    data = []
+    try:
+        conn, cur = startWorkDB()
+        cur.execute("""SELECT
+                    person.name,
+                    person.surname,
+                    person.email,
+                    person.phoneNumber,
+                    person.description,
+                    car.brand,
+                    car.model,
+                    car.carNum,
+                    car.carVin,
+                    car.date,
+                    car.description,
+                    car.status,
+                    car.id
+                    FROM person
+                    INNER JOIN car ON person.id = car.person_id
+                    WHERE car.status = false
+                    ORDER BY car.date DESC""")
+        data = cur.fetchall()
 
-    data = get_pending_users(search_field, search_value)
+    except Exception as e:
+        writeToDoc(e)
+        flash('Kaut kas nogāja greizi!', category='error')
+    
+    finally:
+        endWorkDB(conn)
+
+    return render_template("pending_page.html", data=data)
+
+@views.route('/pending_search', methods = ['POST'])
+@admin_login_required
+def pending_search():
+    searchField = sanitize_and_replace(request.form.get("search_field", None))
+    searchValue = sanitize_and_replace(request.form.get("search_value", None))
+    data = []
+
+    column_mapping = {
+        "name": "person.name",
+        "surname": "person.surname",
+        "phoneNumber": "person.phoneNumber",
+        "brand": "car.brand",
+        "model": "car.model",
+        "carNum": "car.carNum",
+        "carVin": "car.carVin",
+        "date": "car.date"
+    }
+
+    if searchField in column_mapping:
+        searchField = column_mapping[searchField]
+        try:
+            conn, cur = startWorkDB()
+            cur.execute(f"""
+                    SELECT
+                        person.name,
+                        person.surname,
+                        person.email,
+                        person.phoneNumber,
+                        person.description,
+                        car.brand,
+                        car.model,
+                        car.carNum,
+                        car.carVin,
+                        car.date,
+                        car.description,
+                        car.status,
+                        car.id
+                    FROM person
+                    INNER JOIN car ON person.id = car.person_id
+                    WHERE car.status = false
+                    AND {searchField} LIKE '%{searchValue}%'
+                    ORDER BY car.date DESC""")
+            
+            data = cur.fetchall()
+        
+        except Exception as e:
+            writeToDoc(e)
+            flash('Kaut kas nogāja greizi!', category='error')
+        
+        finally:
+            endWorkDB(conn)
+    
     return render_template("pending_page.html", data=data)
 
 @views.route('/delete_car', methods=['POST'])
@@ -110,7 +263,6 @@ def delete_car():
     This operation is only possible if the car status is false.
     """
     car_id = request.form.get('car_id')
-
     try:
         conn, cur = startWorkDB()
         cur.execute("DELETE FROM car WHERE id = %s", (car_id,))
@@ -187,7 +339,40 @@ def user_home():
 @views.route('/notes', methods=['GET', 'POST'])
 @login_required
 def notes():
-    return render_template("user_notes.html")
+    user_id = session['user_id']
+    print(user_id)
+    description = []
+
+    if request.method == 'POST':
+        try:
+            descr = sanitize_and_replace(request.form.get("description"))
+            conn, cur = startWorkDB()
+            cur.execute("UPDATE person SET description = %s WHERE id LIKE %s", (descr, user_id, ))
+            flash("Ziņa veiksmīgi pievienota!", category='success')
+        
+        except Exception as e:
+            writeToDoc(e)
+            flash('Kaut kas nogāja greizi!', category='error')
+            return redirect(url_for("views.user_home"))
+        
+        finally:
+            endWorkDB(conn)
+            return redirect(url_for("views.notes"))
+    
+    try:
+        conn, cur = startWorkDB()
+        cur.execute("SELECT description FROM person WHERE id LIKE %s", (user_id, ))
+        description = cur.fetchone()[0]
+        print(description)
+
+    except Exception as e:
+        writeToDoc(e)
+        flash('Kaut kas nogāja greizi.', category='error')
+    
+    finally:
+        endWorkDB(conn)
+
+    return render_template("user_notes.html", description = description)
 
 @views.route('/reservation', methods = ['GET', 'POST'])
 @login_required

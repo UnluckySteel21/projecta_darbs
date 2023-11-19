@@ -1,0 +1,18 @@
+------------------------------
+Admin 
+2023-11-19 18:49:03.830818
+list index out of range
+------------------------------------------------------------
+Admin 
+2023-11-19 18:33:18.393558
+1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM person
+                    INNER JOIN car ON person.id = car.person_id
+    ' at line 13
+------------------------------------------------------------
+Admin 
+2023-11-19 18:26:59.498156
+1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.description
+                    car.brand,
+                    car.model,
+     ' at line 6
+------------------------------

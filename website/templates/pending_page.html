@@ -10,7 +10,7 @@ Uzgaidāmā telpa
 
 {% block main_content %}
 <div class="container-fluid">
-    <form method="GET" action="/pending_page" class="form" style="margin-top: 10px;">
+    <form method="POST" action="/pending_search" class="form" style="margin-top: 10px;">
         <div class="row g3 align-items-center">
             <div class="col-auto">
                 <label for="search_field" class="col-form-label">Meklēt pēc:</label>
@@ -58,26 +58,26 @@ Uzgaidāmā telpa
                 <td>{{ row[9] }}</td>
                 <td>{{ row[2] }}</td>
                 <td>{{ row[3] }}</td>
-                <td>{{ row[4] }} {{ row[5] }}</td>
-                <td><button class="btn btn-outline-dark" onclick="showDescription(this, '{{ row[11] }}')">Rādīt aprakstu</button> <!-- Add this line -->
-                    <div id="desc-{{ row[11] }}" style="display: none;">{{ row[11] }}</div></td>
+                <td>{{ row[5] }} {{ row[6] }}</td>
+                <td><button class="btn btn-outline-dark" onclick="showDescription(this, '{{ row[10] }}')">Rādīt aprakstu</button> <!-- Add this line -->
+                    <div id="desc-{{ row[10] }}" style="display: none;">{{ row[10] }}</div></td>
                 <td>    
-                    <button class="btn btn-outline-dark" onclick="showDescription(this, '{{ row[12] }}')">Rādīt aprakstu</button>
-                    <div id="desc-{{ row[12] }}" style="display: none;">{{ row[12] }}</div>
+                    <button class="btn btn-outline-dark" onclick="showDescription(this, '{{ row[4] }}')">Rādīt aprakstu</button>
+                    <div id="desc-{{ row[4] }}" style="display: none;">{{ row[4] }}</div>
                 </td>
-                <td>{{ row[6] }}</td>
                 <td>{{ row[7] }}</td>
                 <td>{{ row[8] }}</td>
+                <td>{{ row[12] }}</td>
                 <td>
                     <div style="display: flex;">
                         <form method="POST" action="/update_car_status" onsubmit="return confirm('Vai vēlaties pievienot ierakstu datubāzei?')" style="margin-right: 10px;">
-                            <input type="hidden" name="car_id" value="{{ row[8] }}">
+                            <input type="hidden" name="car_id" value="{{ row[12] }}">
                             <button class="btn" style="padding: 0; margin: 0;" type="submit">
                                 <i class="bi bi-check-square-fill" style="font-size: 16px; color: green;"></i>
                             </button>
                         </form>  
                         <form method="POST" action="/delete_car" onsubmit="return confirm('Vai vēlaties dzēst ierakstu?')">
-                            <input type="hidden" name="car_id" value="{{ row[8] }}">
+                            <input type="hidden" name="car_id" value="{{ row[12] }}">
                             <button class="btn" style="padding: 0; margin: 0;" type="submit">
                                 <i class="bi bi-trash-fill" style="font-size: 16px; color: red;"></i>
                             </button>

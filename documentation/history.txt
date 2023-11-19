@@ -143,3 +143,10 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
         Diemžēl procesa laikā salūza klienta piezīmju darbība.
         Liela koda optimizācija, komentāru pievienošana.
         Pēc ilgiem mēģinājumiem esmu atmetis domu par lietotāju verifikāciju (pagaidām)
+
+    -v1.3
+        Nelieli uzlabojumi meklēšanas funkcijām, kas šķiet ka darbojas.
+        Pēc klienta lūguma noņēmu brīvu reģistrāciju.
+        Autenfikācijas iespējas parādās tikai pēc autoservisa apmeklējuma.
+        Pilnībā darbojas zīmīšu sistēma. Tā darbojas vēl labāk nekā sākotnēji bija paredzēts.
+        

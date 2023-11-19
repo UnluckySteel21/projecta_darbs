@@ -76,8 +76,8 @@ def sign_up():
                 cur.execute("SELECT * FROM person WHERE email LIKE %s", (email,))
                 UsedData = cur.fetchone()
 
-                if UsedData is not None and UsedData[3] != None:
-                    flash('Email already in use!', category='error')
+                if UsedData is not None and UsedData[3] is not None:
+                    flash('Epasta adrese jau ir piereģistrēta!', category='error')
                 elif UsedData[3] == None:
                     password = generate_password_hash(password1, method='pbkdf2:sha256')
                     cur.execute("""UPDATE person
@@ -87,17 +87,11 @@ def sign_up():
                     flash('Konts veiksmigi izveidots!', category='success')
                     return redirect(url_for("auth.login"))
                 else:
-                    loginID = str(uuid4())
-                    password = generate_password_hash(password1, method='pbkdf2:sha256')
-                    cur.execute("""INSERT
-                                INTO person (id, name, surname, password, email, admin, phoneNumber)
-                                VALUES (%s, %s, %s, %s, %s, %s, %s)
-                                """, (loginID, firstName, lastName, password, email, "0", phoneNum))
-                    flash('Account created!', category='success')
+                    flash("Lai veiktu konta reģistrāciju no sākuma jāapmeklē autoserviss.", category='error')
                     return redirect(url_for("auth.login"))
 
             except Exception as e:
-                flash('Something went wrong!', category='error')
+                flash('Kaut kas nogāja greizi!', category='error')
                 writeToDoc(e)
 
             finally:
