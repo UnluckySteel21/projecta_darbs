@@ -1,6 +1,7 @@
-function showDescription(button, descriptionId) {
-    var descDiv = document.getElementById('desc-' + descriptionId);
-    
+function showDescription(button) {
+    var row = button.parentNode; // Get the parent <td> element
+    var descDiv = row.querySelector('.description'); // Find the corresponding description element
+
     if (descDiv) {
         if (descDiv.style.display === 'none') {
             descDiv.style.display = 'block';

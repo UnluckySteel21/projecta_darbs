@@ -10,7 +10,7 @@ Visi lietotāji
 
 {% block main_content %}
 <div class="container-fluid">
-    <form method="POST" action="/search_users" class="form" style="margin-top: 10px;">
+    <form method="get" action="/all_users" class="form" style="margin-top: 10px;">
         <div class="row g3 align-items-center">
             <div class="col-auto">
                 <label for="search_field" class="col-form-label">Meklēt pēc:</label>
@@ -56,15 +56,17 @@ Visi lietotāji
                 <td>{{ row[0] }} {{ row[1] }}</td>
                 <td>{{ row[2] }}</td>
                 <td>{{ row[3] }}</td>
-                <td>{{ row[5] }} {{ row[6] }}</td>
-                <td><button class="btn btn-outline-dark" onclick="showDescription(this, '{{ row[10] }}')">Rādīt aprakstu</button> <!-- Add this line -->
-                    <div id="desc-{{ row[10] }}" style="display: none;">{{ row[10] }}</div></td>
+                <td>{{ row[4] }} {{ row[5] }}</td>
+                <td>
+                    <button class="btn btn-outline-dark" onclick="showDescription(this)">Rādīt aprakstu</button>
+                    <div class="description" style="display: none;">{{ row[11] }}</div>
+                </td>
+                <td>{{ row[6] }}</td>
                 <td>{{ row[7] }}</td>
                 <td>{{ row[8] }}</td>
-                <td>{{ row[12] }}</td>
                 <td>{{ row[9] }}</td>
                 <td>
-                    {% if row[11] %}
+                    {% if row[10] %}
                         <i class="bi bi-check-square-fill" style="color: green;"></i>
                     {% else %}
                         <i class="bi bi-x-square-fill" style="color: red;"></i>

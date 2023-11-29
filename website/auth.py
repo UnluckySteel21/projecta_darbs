@@ -64,28 +64,28 @@ def sign_up():
         email = sanitize_and_replace(request.form.get('email'))
         firstName = sanitize_and_replace(request.form.get('firstName').upper())
         lastName = sanitize_and_replace(request.form.get('lastName').upper())
-        phoneNum = sanitize_and_replace(request.form.get('phoneNum').upper())
         password1 = sanitize_and_replace(request.form.get('password1'))
         password2 = sanitize_and_replace(request.form.get('password2'))
 
         if len(email) < 4 or len(firstName) < 2 or len(lastName) < 2 or len(password1) < 7 or password1 != password2:
-            flash('Please check your input!', category='error')
+            flash('Lūdzu pārbaudi ievaddatus!', category='error')
         else:
             try:
                 conn, cur = startWorkDB()
                 cur.execute("SELECT * FROM person WHERE email LIKE %s", (email,))
                 UsedData = cur.fetchone()
-
-                if UsedData is not None and UsedData[3] is not None:
-                    flash('Epasta adrese jau ir piereģistrēta!', category='error')
-                elif UsedData[3] == None:
-                    password = generate_password_hash(password1, method='pbkdf2:sha256')
-                    cur.execute("""UPDATE person
-                                SET password = %s
-                                WHERE email LIKE %s""",
-                                (password, email))
-                    flash('Konts veiksmigi izveidots!', category='success')
-                    return redirect(url_for("auth.login"))
+                if UsedData is not None:
+                    if UsedData[3] is not None:
+                        flash('Epasta adrese jau ir piereģistrēta!', category='error')
+                    elif UsedData[3] == None:
+                        if UsedData[1] == firstName and UsedData[2] == lastName:
+                            password = generate_password_hash(password1, method='pbkdf2:sha256')
+                            cur.execute("""UPDATE person
+                                    SET password = %s
+                                    WHERE email LIKE %s""",
+                                    (password, email))
+                            flash('Konts veiksmigi izveidots!', category='success')
+                            return redirect(url_for("auth.login"))
                 else:
                     flash("Lai veiktu konta reģistrāciju no sākuma jāapmeklē autoserviss.", category='error')
                     return redirect(url_for("auth.login"))

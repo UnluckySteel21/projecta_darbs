@@ -51,41 +51,50 @@ Klonējot darbu jums nepieciešams:
     
         cur = conn.cursor()
     
-        cur.execute("""CREATE TABLE IF NOT EXISTS person (
-                    id UUID PRIMARY KEY,
-                    name VARCHAR(50),
-                    surname VARCHAR(50),
-                    email VARCHAR(50) UNIQUE,
-                    phoneNumber VARCHAR(30)
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS person (
+            id CHAR(36) PRIMARY KEY,
+            name VARCHAR(50),
+            surname VARCHAR(50),
+            password VARCHAR(150),
+            email VARCHAR(50) UNIQUE,
+            phoneNumber VARCHAR(30),
+            description VARCHAR(350),
+            admin BOOLEAN NOT NULL
         );
         """)
-    
-        cur.execute("""CREATE TABLE IF NOT EXISTS car (
-                    id UUID PRIMARY KEY,
-                    brand VARCHAR(50),
-                    model VARCHAR(50),
-                    carNum VARCHAR(20),
-                    carVin VARCHAR(50),
-                    date VARCHAR(30),
-                    description VARCHAR(350),
-                    person_id UUID REFERENCES person(id),
-                    status BOOLEAN NOT NULL
+
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS reservation (
+            reservation_id CHAR(36) PRIMARY KEY,
+            person_id CHAR(36),
+            car_number VARCHAR(50),
+            description VARCHAR(350),
+            FOREIGN KEY (person_id) REFERENCES person(id)
+            );
+            """)
+
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS car (
+            id CHAR(36) PRIMARY KEY,
+            brand VARCHAR(50),
+            model VARCHAR(50),
+            carNum VARCHAR(20),
+            carVin VARCHAR(50),
+            date VARCHAR(30),
+            description VARCHAR(350),
+            person_id CHAR(36),
+            status BOOLEAN NOT NULL,
+            FOREIGN KEY (person_id) REFERENCES person(id)
         );
         """)
-    
-        cur.execute("""CREATE TABLE IF NOT EXISTS logindata (
-                    id UUID PRIMARY KEY,
-                    email VARCHAR(50) REFERENCES person(email),
-                    password VARCHAR(150),
-                    admin BOOLEAN NOT NULL
-        );
-        """)
-    
-        cur.execute("""CREATE TABLE IF NOT EXISTS admins (
-                    id UUID PRIMARY KEY,
-                    email VARCHAR(50),
-                    password VARCHAR(150),
-                    admin BOOLEAN NOT NULL
+
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS admins (
+            id CHAR(36) PRIMARY KEY,
+            email VARCHAR(50),
+            password VARCHAR(150),
+            admin BOOLEAN NOT NULL
         );
         """)
     
@@ -121,11 +130,24 @@ Klonējot darbu jums nepieciešams:
             id CHAR(36) PRIMARY KEY,
             name VARCHAR(50),
             surname VARCHAR(50),
+            password VARCHAR(150),
             email VARCHAR(50) UNIQUE,
-            phoneNumber VARCHAR(30)
+            phoneNumber VARCHAR(30),
+            description VARCHAR(350),
+            admin BOOLEAN NOT NULL
         );
         """)
-    
+
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS reservation (
+            reservation_id CHAR(36) PRIMARY KEY,
+            person_id CHAR(36),
+            car_number VARCHAR(50),
+            description VARCHAR(350),
+            FOREIGN KEY (person_id) REFERENCES person(id)
+            );
+            """)
+
         cur.execute("""
         CREATE TABLE IF NOT EXISTS car (
             id CHAR(36) PRIMARY KEY,
@@ -140,17 +162,7 @@ Klonējot darbu jums nepieciešams:
             FOREIGN KEY (person_id) REFERENCES person(id)
         );
         """)
-    
-        cur.execute("""
-        CREATE TABLE IF NOT EXISTS logindata (
-            id CHAR(36) PRIMARY KEY,
-            email VARCHAR(50),
-            password VARCHAR(150),
-            admin BOOLEAN NOT NULL,
-            FOREIGN KEY (email) REFERENCES person(email)
-        );
-        """)
-    
+
         cur.execute("""
         CREATE TABLE IF NOT EXISTS admins (
             id CHAR(36) PRIMARY KEY,

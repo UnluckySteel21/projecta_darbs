@@ -138,7 +138,7 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
 
 19/11/2023
     -v1.2
-        MAJOR UPDATE!!!
+        MAJOR UPDATE!
         Uzlabota reģistrācija loģika, tagad jebkurš var izveidot kontu.
         Diemžēl procesa laikā salūza klienta piezīmju darbība.
         Liela koda optimizācija, komentāru pievienošana.
@@ -150,3 +150,12 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
         Autenfikācijas iespējas parādās tikai pēc autoservisa apmeklējuma.
         Pilnībā darbojas zīmīšu sistēma. Tā darbojas vēl labāk nekā sākotnēji bija paredzēts.
         
+20/11/2023
+    -v1.4
+        Izveidots pagination, nepieciešama stilistika
+        Atrasta kļūda reģistrācijas algoritmā (tika novērsta)
+
+29/11/2023
+    -v1.5
+        Pilnībā pārveidota meklēšanas sistēma, kurā tika atrastas vairākas kļūdas.
+         

@@ -81,44 +81,8 @@ def new_client():
 @views.route('/all_users')
 @admin_login_required
 def all_users():
-    data = []
-    try:
-        conn, cur = startWorkDB()
-        cur.execute("""SELECT
-                    person.name,
-                    person.surname,
-                    person.email,
-                    person.phoneNumber,
-                    person.description,
-                    car.brand,
-                    car.model,
-                    car.carNum,
-                    car.carVin,
-                    car.date,
-                    car.description,
-                    car.status,
-                    car.id
-                    FROM person
-                    INNER JOIN car ON person.id = car.person_id
-                    ORDER BY car.date DESC""")
-        data = cur.fetchall()
-
-    except Exception as e:
-        writeToDoc(e)
-        flash('Kaut kas nogāja greizi!', category='error')
-    
-    finally:
-        endWorkDB(conn)
-
-    return render_template("all_users.html", data=data)
-
-@views.route('/search_users', methods = ['POST'])
-@admin_login_required
-def search_users():
-    searchField = sanitize_and_replace(request.form.get("search_field"))
-    searchValue = sanitize_and_replace(request.form.get("search_value"))
-    data = []
-
+    # shows all users in the database
+    # Mapping form values to database column names (trying to prevent sql injections)
     column_mapping = {
         "name": "person.name",
         "surname": "person.surname",
@@ -130,84 +94,56 @@ def search_users():
         "date": "car.date"
     }
 
-    if searchField in column_mapping:
-        searchField = column_mapping[searchField]
-        try:
-            conn, cur = startWorkDB()
-            cur.execute(f"""
-                    SELECT
-                        person.name,
-                        person.surname,
-                        person.email,
-                        person.phoneNumber,
-                        person.description,
-                        car.brand,
-                        car.model,
-                        car.carNum,
-                        car.carVin,
-                        car.date,
-                        car.description,
-                        car.status,
-                        car.id
-                    FROM person
-                    INNER JOIN car ON person.id = car.person_id
-                    AND {searchField} LIKE '%{searchValue}%'
-                    ORDER BY car.date DESC""")
-            
-            data = cur.fetchall()
-        
-        except Exception as e:
-            writeToDoc(e)
-            flash('Kaut kas nogāja greizi!', category='error')
-        
-        finally:
-            endWorkDB(conn)
+    search_field = request.args.get('search_field', None)
+    search_value = request.args.get('search_value', None)
+
+    # Check if the search field exists in the column mapping
+    if search_field is not None:
+        if search_field in column_mapping:
+            search_field = column_mapping[search_field]
+        else:
+            flash('Nepareizs ievades lauks', category='error')
+            return redirect(url_for('views.all_users'))
+
+    if search_value != None:
+        search_value = sanitize_and_replace(search_value.upper())
     
+    data = []
+    try:
+        #allat in a try so the webiste keeps running 
+        conn, cur = startWorkDB()
+
+        if search_field and search_value:
+            query = f"""SELECT person.name, person.surname, person.email, person.phoneNumber, 
+                       car.brand, car.model, car.carNum, car.carVin, car.id, car.date, car.status, car.description
+                       FROM person 
+                       INNER JOIN car ON person.id = car.person_id
+                       WHERE {search_field} LIKE %s
+                       ORDER BY car.date DESC"""
+            cur.execute(query, (f"%{search_value}%",))
+        else:
+            query = """SELECT person.name, person.surname, person.email, person.phoneNumber, 
+                       car.brand, car.model, car.carNum, car.carVin, car.id, car.date, car.status, car.description 
+                       FROM person 
+                       INNER JOIN car ON person.id = car.person_id
+                       ORDER BY car.date DESC"""
+            cur.execute(query)
+
+        data = cur.fetchall()
+
+    except Exception as e:
+        flash('Kaut kas nogāja greizi', category='error')
+        writeToDoc(e)
+
+    finally:
+        endWorkDB(conn)
+
     return render_template("all_users.html", data=data)
 
 @views.route('/pending_page', methods=['GET'])
 @admin_login_required
 def pending_page():
-    # Get search parameters from the request
-    data = []
-    try:
-        conn, cur = startWorkDB()
-        cur.execute("""SELECT
-                    person.name,
-                    person.surname,
-                    person.email,
-                    person.phoneNumber,
-                    person.description,
-                    car.brand,
-                    car.model,
-                    car.carNum,
-                    car.carVin,
-                    car.date,
-                    car.description,
-                    car.status,
-                    car.id
-                    FROM person
-                    INNER JOIN car ON person.id = car.person_id
-                    WHERE car.status = false
-                    ORDER BY car.date DESC""")
-        data = cur.fetchall()
-
-    except Exception as e:
-        writeToDoc(e)
-        flash('Kaut kas nogāja greizi!', category='error')
-    
-    finally:
-        endWorkDB(conn)
-
-    return render_template("pending_page.html", data=data)
-
-@views.route('/pending_search', methods = ['POST'])
-@admin_login_required
-def pending_search():
-    searchField = sanitize_and_replace(request.form.get("search_field", None))
-    searchValue = sanitize_and_replace(request.form.get("search_value", None))
-    data = []
-
+    # Mapping form values to database column names (trying to prevent sql injections)
     column_mapping = {
         "name": "person.name",
         "surname": "person.surname",
@@ -219,42 +155,51 @@ def pending_search():
         "date": "car.date"
     }
 
-    if searchField in column_mapping:
-        searchField = column_mapping[searchField]
-        try:
-            conn, cur = startWorkDB()
-            cur.execute(f"""
-                    SELECT
-                        person.name,
-                        person.surname,
-                        person.email,
-                        person.phoneNumber,
-                        person.description,
-                        car.brand,
-                        car.model,
-                        car.carNum,
-                        car.carVin,
-                        car.date,
-                        car.description,
-                        car.status,
-                        car.id
-                    FROM person
-                    INNER JOIN car ON person.id = car.person_id
-                    WHERE car.status = false
-                    AND {searchField} LIKE '%{searchValue}%'
-                    ORDER BY car.date DESC""")
-            
-            data = cur.fetchall()
-        
-        except Exception as e:
-            writeToDoc(e)
-            flash('Kaut kas nogāja greizi!', category='error')
-        
-        finally:
-            endWorkDB(conn)
-    
-    return render_template("pending_page.html", data=data)
+    # Get search parameters from the request
+    search_field = request.args.get('search_field', None)
+    search_value = request.args.get('search_value', None)
 
+    # Initialize query and params
+    query = """SELECT person.name, person.surname, person.email, person.phoneNumber, 
+               car.brand, car.model, car.carNum, car.carVin, car.id, car.date, car.status, car.description, person.description
+               FROM person 
+               INNER JOIN car ON person.id = car.person_id
+               WHERE car.status = false"""
+    params = []
+
+    # Check if the search field exists in the column mapping
+    if search_field is not None:
+        if search_field in column_mapping:
+            search_field = column_mapping[search_field]
+            if search_value is not None:
+                search_value = sanitize_and_replace(search_value.upper())
+                query += f" AND {search_field} LIKE %s"
+                params.append(f"%{search_value}%")
+        else:
+            flash('Nepareizs ievades lauks', category='error')
+            return redirect(url_for('views.all_users'))
+
+    try:
+        # Try so the website keeps running 
+        conn, cur = startWorkDB()
+
+        # Add ORDER BY clause to the query
+        query += " ORDER BY car.date DESC"
+        cur.execute(query, params)
+
+        # Fetch data
+        data = cur.fetchall()
+
+    except Exception as e:
+        flash('An error occurred', category='error')
+        writeToDoc(e)
+        data = []
+
+    finally:
+        endWorkDB(conn)
+
+    return render_template("pending_page.html", data=data)
+        
 @views.route('/delete_car', methods=['POST'])
 @admin_login_required
 def delete_car():
@@ -263,6 +208,7 @@ def delete_car():
     This operation is only possible if the car status is false.
     """
     car_id = request.form.get('car_id')
+    print(car_id)
     try:
         conn, cur = startWorkDB()
         cur.execute("DELETE FROM car WHERE id = %s", (car_id,))
@@ -340,7 +286,6 @@ def user_home():
 @login_required
 def notes():
     user_id = session['user_id']
-    print(user_id)
     description = []
 
     if request.method == 'POST':
