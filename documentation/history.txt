@@ -164,4 +164,9 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
         Pēc ilgas plānošanas un modelēšanas uzlabota datubāzes struktūra.
         Pilnībā pārveidota severa puse jaunajai datubāzes shēmai (šķiet, ka viss strādā)
         Būs jāpārtaisa klient-end mājaslapas daļa, jāuzlabo piezīmju atstāšanas loģika. Dati tiek iegūti nepareizi.
-         
+    
+    -v1.7
+        Uzlabojumi klienta pusē:
+            Visas automašīnas glabājas kartiņās. Informācija par tām pieejama uzspiežot.
+            Ziņu atstāšana darbojas katrai mašīnai atsevišķi.
+            Iespēja ziņas rediģēt.

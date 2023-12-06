@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block page_title %}
+Mašīna
+{% endblock %}
+
+{% block head_inners %}
+{% endblock %}
+
+{% block main_content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <form action="{{ url_for('views.notes', car_id=car_id) }}" class="d-inline">
+                <button type="submit" class="btn btn-light">Atstāt vai skatīt piezīmes</button>
+            </form>
+            <form action="/reservation" class="d-inline">
+                <button type="submit" class="btn btn-light">Pieteikties uz autoservisa apmeklējumu</button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table table-striped-columns" style="margin-top: 20px; text-align: center;">
+            <thead>
+                <tr>
+                    <th>Marka, Modelis</th>
+                    <th>Datums</th>
+                    <th>Numurs</th>
+                    <th>Status</th>
+                    <th>Apraksts</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for car in cars %}
+                    <tr>
+                        <td>{{ car[0] }} {{ car[1] }}</td>
+                        <td>{{ car[2] }}</td>
+                        <td>{{ car[3] }}</td>
+                        <td>
+                            {% if car[4] %}
+                                <i class="bi bi-check-square-fill" style="color: green;"></i>
+                            {% else %}
+                                <i class="bi bi-x-square-fill" style="color: red;"></i>
+                            {% endif %}
+                        </td>
+                        <td>{{ car[5] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+    
+{% endblock %}

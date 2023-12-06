@@ -358,11 +358,13 @@ def user_home():
         try:
             conn, cur = startWorkDB()
             cur.execute("""
-                SELECT Repair.*
+                SELECT DISTINCT
+                    Car.brand,
+                    Car.model,
+                    Car.id,
+                    Car.car_num
                 FROM Car
-                INNER JOIN Repair ON Car.id = Repair.car_id
                 WHERE Car.person_id = %s
-                ORDER BY Repair.date DESC
             """, (user_id,))
             cars = cur.fetchall()
 
@@ -379,17 +381,16 @@ def user_home():
 
     return render_template("user_home.html", cars=cars)
 
-@views.route('/notes', methods=['GET', 'POST'])
+@views.route('/notes/<car_id>', methods=['GET', 'POST'])
 @login_required
-def notes():
-    user_id = session['user_id']
+def notes(car_id):
     description = []
 
     if request.method == 'POST':
         try:
             descr = sanitize_and_replace(request.form.get("description"))
             conn, cur = startWorkDB()
-            cur.execute("UPDATE Car SET description = %s WHERE id LIKE %s", (descr, user_id, ))
+            cur.execute("UPDATE Car SET description = %s WHERE id LIKE %s", (descr, car_id, ))
             flash("Ziņa veiksmīgi pievienota!", category='success')
         
         except Exception as e:
@@ -399,22 +400,76 @@ def notes():
         
         finally:
             endWorkDB(conn)
-            return redirect(url_for("views.notes"))
-    
-    try:
-        conn, cur = startWorkDB()
-        cur.execute("SELECT description FROM Car WHERE id LIKE %s", (user_id, ))
-        description = cur.fetchone()[0]
-        print(description)
+            return redirect(url_for("views.notes", car_id=car_id))
+        
+    else:
+        try:
+            conn, cur = startWorkDB()
+            cur.execute("SELECT person_id FROM Car WHERE id = %s", (car_id,))
+            carUser = cur.fetchone()
 
-    except Exception as e:
-        writeToDoc(e)
-        flash('Kaut kas nogāja greizi.', category='error')
-    
-    finally:
-        endWorkDB(conn)
+            if carUser[0] == session.get('user_id'):
+                
+                cur.execute("SELECT description FROM Car WHERE id = %s", (car_id,))
+                description = cur.fetchone()
+                print(description)
+                return render_template("user_notes.html", description=description[0])
 
-    return render_template("user_notes.html", description = description)
+            else:
+                flash('Šī mašīna nepieder jums!', category='error')
+
+        except Exception as e:
+            flash('Kaut kas nogāja greizi.', category='error')
+            writeToDoc(e)
+
+        finally:
+            endWorkDB(conn)
+
+        return redirect(url_for("views.user_home"))
+
+@views.route('/car/<car_id>', methods = ['GET', 'POST'])
+@login_required
+def car_view(car_id):
+    if request.method == 'POST':
+        ...
+    
+    else:
+        try:
+            conn, cur = startWorkDB()
+            cur.execute("SELECT person_id FROM Car WHERE id = %s", (car_id, ))
+            carUser = cur.fetchone()
+            cars = []
+
+            if carUser[0] == session.get('user_id'):
+                cur.execute("""
+                    SELECT
+                        Car.brand,
+                        Car.model,
+                        Repair.date,
+                        Car.car_num,
+                        Repair.status,
+                        Repair.description,
+                        Car.id
+                    FROM Car
+                    INNER JOIN Repair ON Car.id = Repair.car_id
+                    WHERE Car.id = %s
+                    ORDER BY Repair.date DESC
+                """, (car_id, ))
+                cars = cur.fetchall()
+
+                return render_template("car_view.html", cars = cars, car_id=car_id)
+
+            else:
+                flash('Šī mašīna nepieder jums!', category='error')
+                return redirect(url_for("views.user_home"))
+            
+        except Exception as e:
+            flash('Kaut kas nogāja greizi!', category='error')
+            writeToDoc(e)
+            return redirect(url_for("views.user_home"))
+
+        finally:
+            endWorkDB(conn)
 
 @views.route('/reservation', methods = ['GET', 'POST'])
 @login_required
