@@ -158,4 +158,10 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
 29/11/2023
     -v1.5
         Pilnībā pārveidota meklēšanas sistēma, kurā tika atrastas vairākas kļūdas.
+
+6/12/2023
+    -v1.6
+        Pēc ilgas plānošanas un modelēšanas uzlabota datubāzes struktūra.
+        Pilnībā pārveidota severa puse jaunajai datubāzes shēmai (šķiet, ka viss strādā)
+        Būs jāpārtaisa klient-end mājaslapas daļa, jāuzlabo piezīmju atstāšanas loģika. Dati tiek iegūti nepareizi.
          

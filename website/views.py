@@ -21,7 +21,6 @@ def new_client():
     if request.method == 'POST':
         # Sanitizing user input and making it mostly uppercase for easier search function
         k_id = sanitize_and_replace(str(uuid4()))  # Generate a unique ID
-        c_id = sanitize_and_replace(str(uuid4()))  # Generate a unique ID
         k_name = sanitize_and_replace(request.form.get('client_name').upper())
         k_surname = sanitize_and_replace(request.form.get('client_surname').upper())
         k_email = sanitize_and_replace(request.form.get('client_email'))
@@ -34,47 +33,138 @@ def new_client():
 
         try:
             conn, cur = startWorkDB()
-            cur.execute("SELECT * FROM person WHERE email LIKE %s", (k_email, ))
+            #Select all data from db where client with the correct email is
+            cur.execute("SELECT id FROM Person WHERE email LIKE %s", (k_email, ))
             dataPerson = cur.fetchone()
 
-            if dataPerson != None:
-                try:
-                    cur.execute("""INSERT INTO car 
-                                (id, brand, model, carNum, carVin, date, description, person_id, status)
+            if dataPerson:
+                #if there is a client with the email
+                person_id = dataPerson[0]
+                #check if client owns the car
+                cur.execute("SELECT id FROM Car WHERE person_id = %s AND car_vin = %s", (person_id, c_vin))
+                dataCar = cur.fetchone()
+
+                if dataCar:
+                    #if client does own the car
+                    try:
+                        cur.execute("""
+                                INSERT INTO Repair 
+                                (id, date, description, status, car_id)
                                 VALUES
-                                (%s, %s, %s, %s, %s, %s, %s, %s, %s)""", 
-                                (c_id, c_brand, c_make, c_num, c_vin, now, c_desc, dataPerson[0], "0"))
-                    cur.execute("""UPDATE person
-                                SET name = %s, surname = %s, phoneNumber = %s
-                                WHERE email LIKE %s""",
-                                (k_name, k_surname, k_num, k_email))
-                    flash('Klients veiksmīgi pievonts!', category='succes')
-                except Exception as e:
-                    flash('Kaut kas nogāja greizi', category='error')
-                    writeToDoc(e)
+                                (%s, %s, %s, %s, %s)""",
+                                (str(uuid4()), now, c_desc, "0", dataCar[0]))
+                        
+                        flash('Klients veiksmīgi pievonts!', category='succes')
+
+                    except Exception as e:
+                        flash('Kaut kas nogāja greizi', category='error')
+                        writeToDoc(e)
+                
+                else:
+                    #if client doesnt own the car
+                    try:
+                        #select all values from db with a provided vin number
+                        cur.execute("SELECT id FROM Car WHERE car_vin = %s", (c_vin, ))
+                        dataCar = cur.fetchone()
+
+                        if dataCar:
+                            #if there is a car with the vin number update the person_id in Car table.
+                            cur.execute("""UPDATE Car
+                                        SET person_id = %s
+                                        WHERE car_vin = %s""",
+                                        (person_id, c_vin))
+                            
+                            cur.execute("""
+                                    INSERT INTO Repair 
+                                    (id, date, description, status, car_id)
+                                    VALUES
+                                    (%s, %s, %s, %s, %s)""",
+                                    (str(uuid4()), now, c_desc, "0", dataCar[0]))
+                        
+                        else:
+                            #if no vin number found (aka new car)
+                            car_id = str(uuid4())
+                            cur.execute("""
+                                    INSERT INTO Car
+                                    (id, brand, model, car_num, car_vin, description, person_id)
+                                    VALUES
+                                    (%s, %s, %s, %s, %s, %s, %s)""",
+                                    (car_id, c_brand, c_make, c_num, c_vin, " ", person_id))
+                        
+                            cur.execute("""
+                                    INSERT INTO Repair 
+                                    (id, date, description, status, car_id)
+                                    VALUES
+                                    (%s, %s, %s, %s, %s)""",
+                                    (str(uuid4()), now, c_desc, "0", car_id))
+                        
+                    except Exception as e:
+                        flash('Kaut kas nogāja greizi.', category='error')
+                        writeToDoc(e)
+                    
+                    finally:
+                        endWorkDB(conn)
+                        return redirect(url_for("views.new_client"))
             else:
+                #no client found
                 try:
-                    cur.execute("""INSERT INTO person
-                                (id, name, surname, email, phoneNumber, admin)
+                    #check if there is a car in db with the vin number
+                    cur.execute("SELECT id FROM Car WHERE car_vin = %s", (c_vin, ))
+                    dataCar = cur.fetchone()
+
+                    cur.execute("""
+                                INSERT INTO Person
+                                (id, name, surname, email, phone_number)
                                 VALUES
-                                (%s, %s, %s, %s, %s, %s)""",
-                                (k_id, k_name, k_surname, k_email, k_num, "0"))
-                    cur.execute("""INSERT INTO car 
-                                (id, brand, model, carNum, carVin, date, description, person_id, status)
+                                (%s, %s, %s, %s, %s)""",
+                                (k_id, k_name, k_surname, k_email, k_num))
+
+                    if dataCar:
+                        #if there is a car with the vin
+                        cur.execute("""UPDATE Car
+                                    SET person_id = %s
+                                    WHERE car_vin = %s""",
+                                    (k_id, c_vin))
+                        
+                        cur.execute("""
+                                INSERT INTO Repair 
+                                (id, date, description, status, car_id)
                                 VALUES
-                                (%s, %s, %s, %s, %s, %s, %s, %s, %s)""", 
-                                (c_id, c_brand, c_make, c_num, c_vin, now, c_desc, k_id, "0"))
-                    flash('Klients veiksmīgi pievonts!', category='succes')
+                                (%s, %s, %s, %s, %s)""",
+                                (str(uuid4()), now, c_desc, "0", dataCar[0]))
+                        
+                    else:
+                        #if no such vin is found (aka a new car)
+                        car_id = str(uuid4())
+                        cur.execute("""
+                                INSERT INTO Car
+                                (id, brand, model, car_num, car_vin, description, person_id)
+                                VALUES
+                                (%s, %s, %s, %s, %s, %s, %s)""",
+                                (car_id, c_brand, c_make, c_num, c_vin, " ", k_id))
+                    
+                        cur.execute("""
+                                INSERT INTO Repair 
+                                (id, date, description, status, car_id)
+                                VALUES
+                                (%s, %s, %s, %s, %s)""",
+                                (str(uuid4()), now, c_desc, "0", car_id))
+                        
+                        flash('Klients veiksmīgi pievonts!', category='succes')
+
                 except Exception as e:
                     flash('Kaut kas nogāja greizi', category='error')
                     writeToDoc(e)
+
         except Exception as e:
             flash('Kaut kas nogāja greizi', category='error')
             writeToDoc(e)
+
         finally:
             endWorkDB(conn)
 
         return render_template("new_client.html")
+    
     else:
         return render_template("new_client.html", date=now)
     
@@ -84,14 +174,14 @@ def all_users():
     # shows all users in the database
     # Mapping form values to database column names (trying to prevent sql injections)
     column_mapping = {
-        "name": "person.name",
-        "surname": "person.surname",
-        "phoneNumber": "person.phoneNumber",
-        "brand": "car.brand",
-        "model": "car.model",
-        "carNum": "car.carNum",
-        "carVin": "car.carVin",
-        "date": "car.date"
+        "name": "Person.name",
+        "surname": "Person.surname",
+        "phoneNumber": "Person.phone_number",
+        "brand": "Car.brand",
+        "model": "Car.model",
+        "carNum": "Car.car_num",
+        "carVin": "Car.car_vin",
+        "date": "Repair.date"
     }
 
     search_field = request.args.get('search_field', None)
@@ -114,19 +204,22 @@ def all_users():
         conn, cur = startWorkDB()
 
         if search_field and search_value:
-            query = f"""SELECT person.name, person.surname, person.email, person.phoneNumber, 
-                       car.brand, car.model, car.carNum, car.carVin, car.id, car.date, car.status, car.description
-                       FROM person 
-                       INNER JOIN car ON person.id = car.person_id
+            query = f"""SELECT Person.name, Person.surname, Person.email, Person.phone_number, 
+                       Car.brand, Car.model, Car.car_num, Car.car_vin, Car.id, Repair.date, Repair.status, Repair.description
+                       FROM Person 
+                       INNER JOIN Car ON Person.id = Car.person_id
+                       INNER JOIN Repair ON Car.id = Repair.car_id
                        WHERE {search_field} LIKE %s
-                       ORDER BY car.date DESC"""
+                       ORDER BY Repair.date DESC"""
             cur.execute(query, (f"%{search_value}%",))
+
         else:
-            query = """SELECT person.name, person.surname, person.email, person.phoneNumber, 
-                       car.brand, car.model, car.carNum, car.carVin, car.id, car.date, car.status, car.description 
-                       FROM person 
-                       INNER JOIN car ON person.id = car.person_id
-                       ORDER BY car.date DESC"""
+            query = """SELECT Person.name, Person.surname, Person.email, Person.phone_number, 
+                       Car.brand, Car.model, Car.car_num, Car.car_vin, Car.id, Repair.date, Repair.status, Repair.description 
+                       FROM Person 
+                       INNER JOIN Car ON Person.id = Car.person_id
+                       INNER JOIN Repair ON Car.id = Repair.car_id
+                       ORDER BY Repair.date DESC"""
             cur.execute(query)
 
         data = cur.fetchall()
@@ -145,14 +238,14 @@ def all_users():
 def pending_page():
     # Mapping form values to database column names (trying to prevent sql injections)
     column_mapping = {
-        "name": "person.name",
-        "surname": "person.surname",
-        "phoneNumber": "person.phoneNumber",
-        "brand": "car.brand",
-        "model": "car.model",
-        "carNum": "car.carNum",
-        "carVin": "car.carVin",
-        "date": "car.date"
+        "name": "Person.name",
+        "surname": "Person.surname",
+        "phoneNumber": "Person.phone_number",
+        "brand": "Car.brand",
+        "model": "Car.model",
+        "carNum": "Car.car_num",
+        "carVin": "Car.car_vin",
+        "date": "Repair.date"
     }
 
     # Get search parameters from the request
@@ -160,11 +253,12 @@ def pending_page():
     search_value = request.args.get('search_value', None)
 
     # Initialize query and params
-    query = """SELECT person.name, person.surname, person.email, person.phoneNumber, 
-               car.brand, car.model, car.carNum, car.carVin, car.id, car.date, car.status, car.description, person.description
-               FROM person 
-               INNER JOIN car ON person.id = car.person_id
-               WHERE car.status = false"""
+    query = """SELECT Person.name, Person.surname, Person.email, Person.phone_number, 
+               Car.brand, Car.model, Car.car_num, Car.car_vin, Repair.id, Repair.date, Repair.status, Car.description
+               FROM Person 
+               INNER JOIN Car ON Person.id = Car.person_id
+               INNER JOIN Repair ON Car.id = Repair.car_id
+               WHERE Repair.status = false"""
     params = []
 
     # Check if the search field exists in the column mapping
@@ -184,7 +278,7 @@ def pending_page():
         conn, cur = startWorkDB()
 
         # Add ORDER BY clause to the query
-        query += " ORDER BY car.date DESC"
+        query += " ORDER BY Repair.date DESC"
         cur.execute(query, params)
 
         # Fetch data
@@ -207,11 +301,10 @@ def delete_car():
     Deletes a car record from the database.
     This operation is only possible if the car status is false.
     """
-    car_id = request.form.get('car_id')
-    print(car_id)
+    repair_id = request.form.get('car_id')
     try:
         conn, cur = startWorkDB()
-        cur.execute("DELETE FROM car WHERE id = %s", (car_id,))
+        cur.execute("DELETE FROM Repair WHERE id = %s", (repair_id,))
         conn.commit()
         flash('Ieraksts veiksmīgi dzēsts', category='success')
 
@@ -231,11 +324,11 @@ def update_car_status():
     Updates car status from false (work unfinished) to true (work finished).
     This operation is triggered by a button click.
     """
-    car_id = request.form.get('car_id')
+    repair_id = request.form.get('car_id')
 
     try:
         conn, cur = startWorkDB()
-        cur.execute("UPDATE car SET status = true WHERE id = %s", (car_id,))
+        cur.execute("UPDATE Repair SET status = true WHERE id = %s", (repair_id,))
         conn.commit()
 
     except Exception as e:
@@ -264,9 +357,13 @@ def user_home():
     if user_id:
         try:
             conn, cur = startWorkDB()
-
-            # Fetch the cars associated with the user
-            cur.execute("SELECT * FROM car WHERE person_id = %s ORDER BY date DESC", (user_id,))
+            cur.execute("""
+                SELECT Repair.*
+                FROM Car
+                INNER JOIN Repair ON Car.id = Repair.car_id
+                WHERE Car.person_id = %s
+                ORDER BY Repair.date DESC
+            """, (user_id,))
             cars = cur.fetchall()
 
         except Exception as e:
@@ -292,7 +389,7 @@ def notes():
         try:
             descr = sanitize_and_replace(request.form.get("description"))
             conn, cur = startWorkDB()
-            cur.execute("UPDATE person SET description = %s WHERE id LIKE %s", (descr, user_id, ))
+            cur.execute("UPDATE Car SET description = %s WHERE id LIKE %s", (descr, user_id, ))
             flash("Ziņa veiksmīgi pievienota!", category='success')
         
         except Exception as e:
@@ -306,7 +403,7 @@ def notes():
     
     try:
         conn, cur = startWorkDB()
-        cur.execute("SELECT description FROM person WHERE id LIKE %s", (user_id, ))
+        cur.execute("SELECT description FROM Car WHERE id LIKE %s", (user_id, ))
         description = cur.fetchone()[0]
         print(description)
 

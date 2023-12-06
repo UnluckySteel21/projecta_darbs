@@ -19,9 +19,9 @@ def login():
 
         try:
             conn, cur = startWorkDB()
-            cur.execute("SELECT * FROM person WHERE email LIKE %s", (email,))
+            cur.execute("SELECT * FROM Person WHERE email LIKE %s", (email,))
             user_data = cur.fetchone()
-            cur.execute("SELECT * FROM admins WHERE email LIKE  %s", (email,))
+            cur.execute("SELECT * FROM Admins WHERE email LIKE  %s", (email,))
             admin_data = cur.fetchone()
             print(user_data)
 
@@ -72,7 +72,7 @@ def sign_up():
         else:
             try:
                 conn, cur = startWorkDB()
-                cur.execute("SELECT * FROM person WHERE email LIKE %s", (email,))
+                cur.execute("SELECT * FROM Person WHERE email LIKE %s", (email,))
                 UsedData = cur.fetchone()
                 if UsedData is not None:
                     if UsedData[3] is not None:
@@ -80,7 +80,7 @@ def sign_up():
                     elif UsedData[3] == None:
                         if UsedData[1] == firstName and UsedData[2] == lastName:
                             password = generate_password_hash(password1, method='pbkdf2:sha256')
-                            cur.execute("""UPDATE person
+                            cur.execute("""UPDATE Person
                                     SET password = %s
                                     WHERE email LIKE %s""",
                                     (password, email))
