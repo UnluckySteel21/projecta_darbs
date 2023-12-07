@@ -103,7 +103,6 @@ def new_client():
                         writeToDoc(e)
                     
                     finally:
-                        endWorkDB(conn)
                         return redirect(url_for("views.new_client"))
             else:
                 #no client found
@@ -298,8 +297,8 @@ def pending_page():
 @admin_login_required
 def delete_car():
     """
-    Deletes a car record from the database.
-    This operation is only possible if the car status is false.
+    Deletes a repair record from the database.
+    This operation is only possible if the repair status is false.
     """
     repair_id = request.form.get('car_id')
     try:
@@ -412,7 +411,6 @@ def notes(car_id):
                 
                 cur.execute("SELECT description FROM Car WHERE id = %s", (car_id,))
                 description = cur.fetchone()
-                print(description)
                 return render_template("user_notes.html", description=description[0])
 
             else:
@@ -438,6 +436,8 @@ def car_view(car_id):
             conn, cur = startWorkDB()
             cur.execute("SELECT person_id FROM Car WHERE id = %s", (car_id, ))
             carUser = cur.fetchone()
+            cur.execute("SELECT * FROM Reservation WHERE car_id = %s", (car_id, ))
+            checkReservation = cur.fetchall()
             cars = []
 
             if carUser[0] == session.get('user_id'):
@@ -457,7 +457,7 @@ def car_view(car_id):
                 """, (car_id, ))
                 cars = cur.fetchall()
 
-                return render_template("car_view.html", cars = cars, car_id=car_id)
+                return render_template("car_view.html", cars = cars, car_id=car_id, checkReservation=checkReservation)
 
             else:
                 flash('Šī mašīna nepieder jums!', category='error')
@@ -471,10 +471,114 @@ def car_view(car_id):
         finally:
             endWorkDB(conn)
 
-@views.route('/reservation', methods = ['GET', 'POST'])
+@views.route('/reservation/<car_id>', methods = ['GET', 'POST'])
 @login_required
-def reservation():    
-    return render_template("user_reservation.html")
+def reservation(car_id):
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    if request.method == 'POST':
+        descr = request.form.get("description")
+
+        try:
+            conn, cur = startWorkDB()
+            cur.execute("""INSERT INTO 
+                        Reservation
+                        (reservation_id, date, car_id, description)
+                        VALUES (%s, %s, %s, %s)""", (str(uuid4()), now, car_id, descr))
+            
+            flash('Jūsu pieprasījums ir saņemts! Uzgaidiet līdz mēs kontaktēsimies ar jums par ērtu laiku.', category='success')
+            return redirect(url_for("views.user_home"))
+        
+        except Exception as e:
+            writeToDoc(e)
+            flash('Kaut kas nogāja greizi!', category='error')
+        
+        finally: 
+            endWorkDB(conn)
+        
+        return redirect(url_for("views.user_home"))
+
+    else:
+        try:
+            conn, cur = startWorkDB()
+            cur.execute("SELECT person_id FROM Car WHERE id = %s", (car_id, ))
+            carUser = cur.fetchone()
+
+            if carUser[0] == session.get('user_id'):
+                cur.execute("SELECT * FROM Reservation WHERE car_id = %s", (car_id, ))
+                carResev = cur.fetchall()
+
+                if carResev:
+                    flash('Mašīnai ir aktīva rezervācija! Lūdzu pacietīgi uzgaidiet, kamēr mēs ar jums sazināsimies!', category='error')
+                    return redirect(url_for("views.user_home"))
+                
+                else:
+                    return render_template("user_reservation.html", car_id = car_id)
+
+        except Exception as e:
+            writeToDoc(e)
+            flash('Kaut kas nogāja greizi.', category='error')
+
+        finally:
+            endWorkDB(conn)
+        
+        return render_template("user_reservation.html")
+
+@views.route('/reservation_cancel/<car_id>')
+@login_required
+def reservation_cancel(car_id):
+    try:
+        conn, cur = startWorkDB()
+        cur.execute("SELECT person_id FROM Car WHERE id = %s", (car_id, ))
+        carUser = cur.fetchone()
+
+        if carUser[0] == session.get('user_id'):
+            cur.execute("DELETE FROM Reservation WHERE car_id = %s", (car_id, ))
+
+    except Exception as e:
+        writeToDoc(e)
+        flash('Kaut kas nogāja greizi!', category='error')
+    
+    finally:
+        endWorkDB(conn)
+        return redirect(url_for("views.user_home"))
+
+@views.route('/view_reservations', methods = ['GET', 'POST'])
+@admin_login_required
+def view_reservations():
+    if request.method == 'POST':
+        ...
+    else:
+        try:
+            conn, cur = startWorkDB()
+            cur.execute("""
+                        SELECT
+                            Reservation.reservation_id, 
+                            Reservation.date,
+                            Reservation.description,
+                            Car.brand,
+                            Car.model,
+                            Person.name,
+                            Person.surname,
+                            Person.email,
+                            Person.phone_number
+                        FROM
+                            Reservation
+                        INNER JOIN Car ON Car.id = Reservation.car_id
+                        INNER JOIN Person ON Person.id = Car.person_id
+                        ORDER BY
+                            Reservation.date DESC;""")
+            reservationData = cur.fetchall()
+            return render_template("view_reservations.html", reservationData=reservationData)
+        
+        except Exception as e:
+            writeToDoc(e)
+            flash('Kaut kas nogāja greizi!', category='error')
+        
+        finally:
+            endWorkDB(conn)
+        
+        return redirect(url_for("views.admin_home_161660"))
 
 @views.after_request
 def apply_caching(response):

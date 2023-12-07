@@ -170,3 +170,7 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
             Visas automašīnas glabājas kartiņās. Informācija par tām pieejama uzspiežot.
             Ziņu atstāšana darbojas katrai mašīnai atsevišķi.
             Iespēja ziņas rediģēt.
+
+7/12/2023  
+    -v1.8
+        Izveidota reģistrācijas sistēma klienta pusē

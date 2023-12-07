@@ -5,7 +5,11 @@ Rezervācija
 {% endblock %}
 
 {% block main_content %}
-<div class="container mt-5">
-    
+<div class="container">
+    <form method="POST" action="{{ url_for('views.reservation', car_id=car_id) }}">
+        <h4>Ievadi problēmas aprakstu: </h4>
+        <textarea name="description" rows="10" cols="30"></textarea>
+        <input type="submit">
+    </form>
 </div>
 {% endblock %}

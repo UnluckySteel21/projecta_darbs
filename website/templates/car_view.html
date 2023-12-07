@@ -14,9 +14,14 @@ Mašīna
             <form action="{{ url_for('views.notes', car_id=car_id) }}" class="d-inline">
                 <button type="submit" class="btn btn-light">Atstāt vai skatīt piezīmes</button>
             </form>
-            <form action="/reservation" class="d-inline">
+            <form action="{{ url_for('views.reservation', car_id=car_id) }}" class="d-inline">
                 <button type="submit" class="btn btn-light">Pieteikties uz autoservisa apmeklējumu</button>
             </form>
+            {% if checkReservation %}
+                <form action="{{ url_for('views.reservation_cancel', car_id=car_id) }}" class="d-inline">
+                    <button type="submit" class="btn btn-light">Atteikties no rezervācijas</button>
+                </form>
+            {% endif %}
         </div>
     </div>
     <div class="row">
