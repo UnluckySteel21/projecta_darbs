@@ -543,42 +543,56 @@ def reservation_cancel(car_id):
         endWorkDB(conn)
         return redirect(url_for("views.user_home"))
 
-@views.route('/view_reservations', methods = ['GET', 'POST'])
+@views.route('/view_reservations')
 @admin_login_required
 def view_reservations():
-    if request.method == 'POST':
-        ...
-    else:
-        try:
-            conn, cur = startWorkDB()
-            cur.execute("""
-                        SELECT
-                            Reservation.reservation_id, 
-                            Reservation.date,
-                            Reservation.description,
-                            Car.brand,
-                            Car.model,
-                            Person.name,
-                            Person.surname,
-                            Person.email,
-                            Person.phone_number
-                        FROM
-                            Reservation
-                        INNER JOIN Car ON Car.id = Reservation.car_id
-                        INNER JOIN Person ON Person.id = Car.person_id
-                        ORDER BY
-                            Reservation.date DESC;""")
-            reservationData = cur.fetchall()
-            return render_template("view_reservations.html", reservationData=reservationData)
-        
-        except Exception as e:
-            writeToDoc(e)
-            flash('Kaut kas nogāja greizi!', category='error')
-        
-        finally:
-            endWorkDB(conn)
-        
-        return redirect(url_for("views.admin_home_161660"))
+    try:
+        conn, cur = startWorkDB()
+        cur.execute("""
+                    SELECT
+                        Reservation.reservation_id, 
+                        Reservation.date,
+                        Reservation.description,
+                        Car.brand,
+                        Car.model,
+                        Person.name,
+                        Person.surname,
+                        Person.email,
+                        Person.phone_number
+                    FROM
+                        Reservation
+                    INNER JOIN Car ON Car.id = Reservation.car_id
+                    INNER JOIN Person ON Person.id = Car.person_id
+                    ORDER BY
+                        Reservation.date DESC;""")
+        reservationData = cur.fetchall()
+        return render_template("view_reservations.html", reservationData=reservationData)
+    
+    except Exception as e:
+        writeToDoc(e)
+        flash('Kaut kas nogāja greizi!', category='error')
+    
+    finally:
+        endWorkDB(conn)
+    
+    return redirect(url_for("views.admin_home"))
+
+@views.route('/delete_reservation', methods = ['POST'])
+@admin_login_required
+def delete_reservation():
+    reservation_id = request.form.get('reservation_id')
+    try:
+        conn, cur = startWorkDB()
+        cur.execute("DELETE FROM Reservation WHERE reservation_id = %s", (reservation_id, ))
+        flash('Ieraksts veiksmīgi dzēsts!', category='success')
+    
+    except Exception as e:
+        writeToDoc(e)
+        flash('Kaut kas nogāja greizi!', category='error')
+    
+    finally:
+        endWorkDB(conn)
+        return redirect(url_for("views.view_reservations"))
 
 @views.after_request
 def apply_caching(response):

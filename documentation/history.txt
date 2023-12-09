@@ -174,3 +174,8 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
 7/12/2023  
     -v1.8
         Izveidota reģistrācijas sistēma klienta pusē
+
+9/12/2023
+    -1.9
+        Pilnībā pabeigta rezervāciju sistēmam.
+        Produkts gatavs atrādīšanai.

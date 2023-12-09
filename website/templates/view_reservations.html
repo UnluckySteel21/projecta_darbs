@@ -8,5 +8,38 @@ Rezervācijas
 {% endblock %}
 
 {% block main_content %}
-
+<div class="container">
+    <h4>Rezervācijas:</h4>
+    <table class="table table-striped-columns" style="margin-top: 10px; text-align: center;">
+        <thead>
+            <th>Datums</th>
+            <th>Apraksts</th>
+            <th>Marka, Modelis</th>
+            <th>Vārds, Uzvārds</th>
+            <th>Epasts</th>
+            <th>Telefona numurs</th>
+            <th>Noņemt rezervāciju</th>
+        </thead>
+        <tbody class="table-group-divider">
+            {% for reservation in reservationData %}
+                <tr>
+                    <td>{{ reservation[1] }}</td>
+                    <td>{{ reservation[2] }}</td>
+                    <td>{{ reservation[3]}} {{ reservation[4] }}</td>
+                    <td>{{ reservation[5] }} {{reservation[6] }}</td>
+                    <td>{{ reservation[7] }}</td>
+                    <td>{{ reservation[8] }}</td>
+                    <td>
+                        <form method="POST" action="/delete_reservation" onsubmit="return confirm('Vai vēlaties dzēst ierakstu?')">
+                            <input type="hidden" name="reservation_id" value="{{ reservation[0] }}">
+                            <button class="btn" style="padding: 0; margin: 0;" type="submit">
+                                <i class="bi bi-trash-fill" style="font-size: 16px; color: red;"></i>
+                            </button>
+                        </form>    
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
