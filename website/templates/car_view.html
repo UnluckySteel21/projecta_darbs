@@ -12,14 +12,14 @@ Mašīna
     <div class="row">
         <div class="col-md-12">
             <form action="{{ url_for('views.notes', car_id=car_id) }}" class="d-inline">
-                <button type="submit" class="btn btn-light">Atstāt vai skatīt piezīmes</button>
+                <button type="submit" class="btn btn-light" style="background-color: wheat;">Atstāt vai skatīt piezīmes</button>
             </form>
             <form action="{{ url_for('views.reservation', car_id=car_id) }}" class="d-inline">
-                <button type="submit" class="btn btn-light">Pieteikties uz autoservisa apmeklējumu</button>
+                <button type="submit" class="btn btn-light" style="background-color: wheat;">Pieteikties uz autoservisa apmeklējumu</button>
             </form>
             {% if checkReservation %}
                 <form action="{{ url_for('views.reservation_cancel', car_id=car_id) }}" class="d-inline">
-                    <button type="submit" class="btn btn-light">Atteikties no rezervācijas</button>
+                    <button type="submit" class="btn btn-light" style="background-color: wheat;">Atteikties no rezervācijas</button>
                 </form>
             {% endif %}
         </div>
@@ -35,7 +35,7 @@ Mašīna
                     <th>Apraksts</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="table-group-divider">
                 {% for car in cars %}
                     <tr>
                         <td>{{ car[0] }} {{ car[1] }}</td>

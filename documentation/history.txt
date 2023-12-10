@@ -176,6 +176,10 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
         Izveidota reģistrācijas sistēma klienta pusē
 
 9/12/2023
-    -1.9
+    -v1.9
         Pilnībā pabeigta rezervāciju sistēmam.
         Produkts gatavs atrādīšanai.
+
+10/12/2023
+    -v1.10
+        Uzlabots dizains pēc vispārējiem lapas lietotāja lūgumiem
