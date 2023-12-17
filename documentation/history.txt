@@ -183,3 +183,7 @@ Mainīgos un funkcijas definēju angļu valodā un atsatarpes vietā izmantoju "
 10/12/2023
     -v1.10
         Uzlabots dizains pēc vispārējiem lapas lietotāja lūgumiem
+
+17/12/2023
+    -v1.11
+        Uzlabots navbars un dizains

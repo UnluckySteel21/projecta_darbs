@@ -9,7 +9,7 @@ Rezervācijas
 
 {% block main_content %}
 <div class="container">
-    <h4>Rezervācijas:</h4>
+    <h4 style="margin-top: 15px;">Rezervācijas:</h4>
     <table class="table table-striped-columns" style="margin-top: 10px; text-align: center;">
         <thead>
             <th>Datums</th>
@@ -37,6 +37,10 @@ Rezervācijas
                             </button>
                         </form>    
                     </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="9">Nav datu!</td>
                 </tr>
             {% endfor %}
         </tbody>

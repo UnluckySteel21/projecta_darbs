@@ -17,43 +17,46 @@
 <body class="d-flex flex-column">
     <div class="content">
         <nav class="navbar navbar-expand-sm navbar-dark" style="background-color: rgba(40, 40, 40, 0.911);">
+            <span class="navbar-brand">RB Autoserviss</span>
             <button class="navbar-toggler"
-                style="color: wheat;"  
-                type="button" data-bs-toggle="collapse" 
-                data-bs-target="#navbarNav" 
-                aria-controls="navbarNav" 
-                aria-expanded="false" 
-                aria-label="Toggle navigation">
+                    style="color: gold;"  
+                    type="button" data-bs-toggle="collapse" 
+                    data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" 
+                    aria-expanded="false" 
+                    aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse justify-content-center navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    {% if session['admin'] %}
-                        <li class="nav-item">
-                            <a href="/admin_home_161660" class="nav-link" id="admin_home" style="color: wheat;">Sākumlapa</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/logout" class="nav-link" id="logout" style="color: wheat;">Irakstīties</a>
-                        </li>    
-                    {% elif session['user_id'] %}
-                        <li class="nav-item">
-                            <a href="/user_home" class="nav-link" id="user_home" style="color: wheat;">Sākumlapa</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/logout" class="nav-link" id="logout" style="color: wheat;">Irakstīties</a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a href="/home" class="nav-link" id="home" style="color: wheat;">Sākumlapa</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/login" class="nav-link" id="login" style="color: wheat;">Ielogoties</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/sign_up" class="nav-link" id="sign_up" style="color: wheat;">Piereģistrēties</a>
-                        </li>
-                    {% endif %}
-                </ul>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="container-fluid d-flex justify-content-center">
+                    <ul class="navbar-nav mx-auto">
+                        {% if session['admin'] %}
+                            <li class="nav-item">
+                                <a href="/admin_home_161660" class="nav-link" id="admin_home" style="color: gold;">Sākumlapa</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/logout" class="nav-link" id="logout" style="color: gold;">Irakstīties</a>
+                            </li>    
+                        {% elif session['user_id'] %}
+                            <li class="nav-item">
+                                <a href="/user_home" class="nav-link" id="user_home" style="color: gold;">Sākumlapa</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/logout" class="nav-link" id="logout" style="color: gold;">Irakstīties</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a href="/home" class="nav-link" id="home" style="color: gold;">Sākumlapa</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/login" class="nav-link" id="login" style="color: gold;">Ielogoties</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/sign_up" class="nav-link" id="sign_up" style="color: gold;">Piereģistrēties</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
             </div>
         </nav>
 
@@ -67,7 +70,7 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="alert"><span aria-hidden="true"></span></button>
                                 </div>
                             {% else %}
-                                <div class="alert alert-dismissable fade show" style="background-color: rgba(52, 39, 124, 0.911);">
+                                <div class="alert alert-dismissable fade show" style="background-color: rgba(52, 39, 124, 0.911); color: wheat;">
                                     {{ message }}
                                     <button type="button" class="btn-close" data-bs-dismiss="alert"><span aria-hidden="true"></span></button>
                                 </div>
@@ -75,28 +78,25 @@
                     {% endfor %}
                 {% endif %}
             {% endwith %}
-        </div>        
-        <div class="container-fluid text-center py-2" style="margin-top: 20px; font-size: 52px;">
-            RB Autoserviss
-        </div>       
+        </div>   
         <div class="container-fluid">
             {% block main_content %}
             {% endblock %}
         </div>
     </div>
-    <footer class="footer py-2">
+    <footer class="footer py-2" style="background-color: rgba(40, 40, 40, 0.911);">
         <div class="container-fluid d-flex justify-content-between align-items-center">
             <span class="text" style="color: wheat;">&copy; 2023 | Webmaster</span>
             <div class="social-icons">
                 <span>
                     <a href="https://www.gmail.com" target="_blank" style="margin-right: 20px;">
-                    <i class="bi bi-mailbox-flag" style="font-size: 24px; color: wheat;"></i></a>
+                    <i class="bi bi-mailbox-flag" style="font-size: 24px; color: gold;"></i></a>
                 </span>
-                <a href="https://web.whatsapp.com" target="_blank" style="margin-right: 20px; color: wheat;">
+                <a href="https://web.whatsapp.com" target="_blank" style="margin-right: 20px; color: gold;">
                     <i class="bi bi-whatsapp" style="font-size: 24px;"></i></a>
                 <span>
                     <a href="/" style="margin-right: 20px;">
-                        <i class="bi bi-info-circle" style="font-size: 24px; color: wheat;"></i></a>
+                        <i class="bi bi-info-circle" style="font-size: 24px; color: gold;"></i></a>
                 </span>
             </div>
         </div>

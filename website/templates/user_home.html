@@ -9,14 +9,14 @@ Lietotāja infolapa
 
 {% block main_content %}
 <div class="container">
-    <div class="row">
+    <div class="row" style="margin-top: 15px;">
         <h4>Izvēlies auto:</h4>
     </div>
     <div class="row">
         {% for car in cars %}
             <div class="col-md-6">
                 <a href="{{ url_for('views.car_view', car_id=car[2]) }}" class="card" style="text-decoration: none;">
-                    <div class="card-body" style="background-color: wheat;">
+                    <div class="card-body" style="background-color: gold;">
                         <div class="card-title">{{car[0]}} {{car[1]}}</div>
                         <div class="card-text">{{car[3]}}</div>
                     </div>

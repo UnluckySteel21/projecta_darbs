@@ -44,3 +44,19 @@ body {
     visibility: hidden;
     justify-content: center;
 }
+
+.navbar-brand{
+    color: wheat;
+    margin-left: 20px;
+    position: absolute;
+}
+
+.navbar-brand:hover{
+    color: wheat;
+}
+
+@media (max-width: 768px) {
+    .navbar-brand {
+        position: relative;
+    }
+}
