@@ -1,7 +1,6 @@
 body {
-    background-color: lightgray;
+    background-color: rgb(56, 55, 55);
     font-family: cursive;
-    background-image: url('../images/background.png');
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;

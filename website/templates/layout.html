@@ -65,12 +65,12 @@
                 {% if messages %}
                     {% for category, message in messages %}
                             {% if category == 'error' %}
-                                <div class="alert alert-dismissable fade show" style="color: red; background-color: rgba(52, 39, 124, 0.911);">
+                                <div class="alert alert-dismissable fade show" style="color: rgb(123, 10, 10); background-color: rgba(139, 135, 52, 0.911);">
                                     {{ message }}
                                     <button type="button" class="btn-close" data-bs-dismiss="alert"><span aria-hidden="true"></span></button>
                                 </div>
                             {% else %}
-                                <div class="alert alert-dismissable fade show" style="background-color: rgba(52, 39, 124, 0.911); color: wheat;">
+                                <div class="alert alert-dismissable fade show" style="background-color: rgba(139, 135, 52, 0.911); color: wheat;">
                                     {{ message }}
                                     <button type="button" class="btn-close" data-bs-dismiss="alert"><span aria-hidden="true"></span></button>
                                 </div>
