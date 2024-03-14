@@ -1,5 +1,7 @@
 # Projecta Darbs
 
+Šis projekts ir Autoservisa vadības sistēma, kas veic klientu un remontdarbu uzskaiti. 
+
 Klonējot darbu jums nepieciešams:
 
 1. Izveidot savu `venv` direktoriju (tam jāatrodas blakus jūsu `website` direktorijam, nevis tajā iekšā).
