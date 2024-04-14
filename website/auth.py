@@ -1,8 +1,19 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, session #Importing the standart flask components
-from .database import startWorkDB, endWorkDB #the self made database functions
-from uuid import uuid4 #uuid for id generation
-from werkzeug.security import generate_password_hash, check_password_hash #password hashing and salting for more security
-from .verification import custom_logout_user, custom_user_session, login_required, sanitize_and_replace #self made module to check user privileges, session data and input sanitization
+#Importing the standart flask components
+
+from flask import (Blueprint,
+                render_template,
+                request, flash,
+                redirect,
+                url_for) 
+#the self made database functions
+from .database import startWorkDB, endWorkDB
+#password hashing and salting for more security
+from werkzeug.security import generate_password_hash, check_password_hash
+#self made module to check user privileges, session data
+from .verification import (custom_logout_user,
+                           custom_user_session,
+                           login_required,
+                           sanitize_and_replace)
 from .viewsFunctions import writeToDoc
 #def the blueprint
 auth = Blueprint('auth', __name__)
@@ -10,8 +21,9 @@ auth = Blueprint('auth', __name__)
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     """
-    Handles user login. If the user is an admin, they are redirected to the admin home page.
-    If the user is not an admin, they are redirected to the user home page.
+    Handles user login. 
+    If the user is an admin, they are redirected to the admin home page.
+    If the user is not admin, they are redirected to the user home page.
     """
     if request.method == 'POST':
         email = sanitize_and_replace(request.form.get('email'))
@@ -25,18 +37,28 @@ def login():
             admin_data = cur.fetchone()
             print(user_data)
 
-            if admin_data and check_password_hash(admin_data[2], password):
-                flash('Veiksmīga ielogošanās!', category='success')
-                custom_user_session(admin_data[0], True, "Admin", "", remember=True)
+            if admin_data and check_password_hash(admin_data[2],
+                                                  password):
+                flash('Veiksmīga ielogošanās!',
+                      category='success')
+                custom_user_session(admin_data[0],
+                                    True,
+                                    "Admin",
+                                    "",
+                                    remember=True)
                 return redirect(url_for("views.admin_home"))
 
             if user_data and check_password_hash(user_data[3], password):
                 flash('Veiksmīga ielogošanās!', category='success')
-                custom_user_session(user_data[0], False, user_data[1], user_data[2], remember=True)
-                #print(user_data[0][1], user_data[0][2])
+                custom_user_session(user_data[0],
+                                    False,
+                                    user_data[1],
+                                    user_data[2],
+                                    remember=True)
                 return redirect(url_for("views.user_home"))
 
-            flash('Lietotājs nav atrasts! Pārbaudiet vai pareizi ievadīts epasts!', category='error')
+            flash('Lietotājs nav atrasts!',
+                  category='error')
             return redirect(url_for("auth.login"))
 
         except Exception as e:
@@ -62,32 +84,44 @@ def sign_up():
     """
     if request.method == 'POST':
         email = sanitize_and_replace(request.form.get('email'))
-        firstName = sanitize_and_replace(request.form.get('firstName').upper())
-        lastName = sanitize_and_replace(request.form.get('lastName').upper())
+        firstName = sanitize_and_replace(request.form.get('firstName'))
+        lastName = sanitize_and_replace(request.form.get('lastName'))
         password1 = sanitize_and_replace(request.form.get('password1'))
         password2 = sanitize_and_replace(request.form.get('password2'))
+        lastName = lastName.upper()
+        firstName = firstName.upper()
 
-        if len(email) < 4 or len(firstName) < 2 or len(lastName) < 2 or len(password1) < 7 or password1 != password2:
-            flash('Lūdzu pārbaudi ievaddatus!', category='error')
+        if len(email) < 4:
+            if len(firstName) < 2:
+                if len(lastName) < 2:
+                    if len(password1) < 7: 
+                        if password1 != password2:
+                            flash('Lūdzu pārbaudi ievaddatus!',
+                            category='error')           
         else:
             try:
                 conn, cur = startWorkDB()
-                cur.execute("SELECT * FROM Person WHERE email LIKE %s", (email,))
+                cur.execute("SELECT * FROM Person WHERE email LIKE %s",
+                            (email,))
                 UsedData = cur.fetchone()
                 if UsedData is not None:
                     if UsedData[3] is not None:
-                        flash('Epasta adrese jau ir piereģistrēta!', category='error')
+                        flash('Epasta adrese jau ir piereģistrēta!',
+                              category='error')
                     elif UsedData[3] == None:
                         if UsedData[1] == firstName and UsedData[2] == lastName:
-                            password = generate_password_hash(password1, method='pbkdf2:sha256')
+                            password = generate_password_hash(password1,
+                                                method='pbkdf2:sha256')
                             cur.execute("""UPDATE Person
                                     SET password = %s
                                     WHERE email LIKE %s""",
                                     (password, email))
-                            flash('Konts veiksmigi izveidots!', category='success')
+                            flash('Konts veiksmigi izveidots!',
+                                  category='success')
                             return redirect(url_for("auth.login"))
                 else:
-                    flash("Lai veiktu konta reģistrāciju no sākuma jāapmeklē autoserviss.", category='error')
+                    flash("Lai reģistrētos apmeklējiet autoservisu.",
+                          category='error')
                     return redirect(url_for("auth.login"))
 
             except Exception as e:
@@ -101,7 +135,8 @@ def sign_up():
     
 @auth.after_request
 def apply_caching(response):
-    #these are my poor atempts to stop XSS (I dont have any cybersecirty degree so i am surprised this somewhat works)
+    #these are my poor atempts to stop XSS 
+    #(I am surprised this somewhat works)
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     return response

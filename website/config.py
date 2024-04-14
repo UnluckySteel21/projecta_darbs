@@ -8,11 +8,11 @@ load_dotenv(path.join(basedir, ".env"))
 
 class Config:
     SECRET_KEY = environ.get("SECRET_KEY")
-    MAINTENANCE_MODE = True if environ.get('MAINTENANCE_MODE') == 'True' else False
+    if environ.get('MAINTENANCE_MODE') == 'True':
+        MAINTENANCE_MODE = True
+    else:
+        MAINTENANCE_MODE = False
     FLASK_ENV = environ.get("FLASK_ENV")
-    RECAPTCHA_ENABLED = True
-    RECAPTCHA_SITE_KEY = environ.get("RECAPTCHA_SITE_KEY")
-    RECAPTCHA_SECRET_KEY = environ.get("RECAPTCHA_SECRET_KEY")
 
 class DevConfig(Config):
     ...

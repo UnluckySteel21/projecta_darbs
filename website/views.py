@@ -1,8 +1,16 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, session
+from flask import (Blueprint,
+                   render_template,
+                   request,
+                   flash,
+                   redirect,
+                   url_for,
+                   session)
 from uuid import uuid4
 from datetime import datetime
 from .database import startWorkDB, endWorkDB
-from .verification import login_required, admin_login_required, sanitize_and_replace
+from .verification import (login_required,
+                           admin_login_required,
+                           sanitize_and_replace)
 from .viewsFunctions import writeToDoc
 
 views = Blueprint('views', __name__)
@@ -19,29 +27,39 @@ def new_client():
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     if request.method == 'POST':
-        # Sanitizing user input and making it mostly uppercase for easier search function
-        k_id = sanitize_and_replace(str(uuid4()))  # Generate a unique ID
-        k_name = sanitize_and_replace(request.form.get('client_name').upper())
-        k_surname = sanitize_and_replace(request.form.get('client_surname').upper())
+        # Sanitizing user input
+        k_id = sanitize_and_replace(str(uuid4()))
+        k_name = sanitize_and_replace(request.form.get('client_name'))
+        k_name = k_name.upper()
+        k_surname = sanitize_and_replace(request.form.get('client_surname'))
+        k_surname = k_surname.upper()
         k_email = sanitize_and_replace(request.form.get('client_email'))
-        k_num = sanitize_and_replace(request.form.get('client_number').upper())
-        c_brand = sanitize_and_replace(request.form.get('car_brand').upper())
-        c_make = sanitize_and_replace(request.form.get('car_make').upper())
-        c_num = sanitize_and_replace(request.form.get('car_number').upper())
+        k_num = sanitize_and_replace(request.form.get('client_number'))
+        k_num = k_num.upper()
+        c_brand = sanitize_and_replace(request.form.get('car_brand'))
+        c_brand = c_brand.upper()
+        c_make = sanitize_and_replace(request.form.get('car_make'))
+        c_make = c_make.upper()
+        c_num = sanitize_and_replace(request.form.get('car_number'))
+        c_num = c_num.upper()
         c_vin = sanitize_and_replace(request.form.get('car_vin').upper())
-        c_desc = sanitize_and_replace(request.form.get('repair_specification'))
+        c_desc = request.form.get('repair_specification')
+        c_desc = sanitize_and_replace(c_desc)
 
         try:
             conn, cur = startWorkDB()
             #Select all data from db where client with the correct email is
-            cur.execute("SELECT id FROM Person WHERE email LIKE %s", (k_email, ))
+            cur.execute("SELECT id FROM Person WHERE email LIKE %s",
+                        (k_email, ))
             dataPerson = cur.fetchone()
 
             if dataPerson:
                 #if there is a client with the email
                 person_id = dataPerson[0]
                 #check if client owns the car
-                cur.execute("SELECT id FROM Car WHERE person_id = %s AND car_vin = %s", (person_id, c_vin))
+                cur.execute("""SELECT id FROM Car 
+                            WHERE person_id = %s AND car_vin = %s""",
+                            (person_id, c_vin))
                 dataCar = cur.fetchone()
 
                 if dataCar:
@@ -52,23 +70,32 @@ def new_client():
                                 (id, date, description, status, car_id)
                                 VALUES
                                 (%s, %s, %s, %s, %s)""",
-                                (str(uuid4()), now, c_desc, "0", dataCar[0]))
+                                (str(uuid4()),
+                                 now,
+                                 c_desc,
+                                 "0",
+                                 dataCar[0]))
                         
-                        flash('Klients veiksmīgi pievonts!', category='succes')
+                        flash('Klients veiksmīgi pievonts!',
+                              category='succes')
 
                     except Exception as e:
-                        flash('Kaut kas nogāja greizi', category='error')
+                        flash('Kaut kas nogāja greizi',
+                              category='error')
                         writeToDoc(e)
                 
                 else:
                     #if client doesnt own the car
                     try:
-                        #select all values from db with a provided vin number
-                        cur.execute("SELECT id FROM Car WHERE car_vin = %s", (c_vin, ))
+                        #select values from db with a provided vin number
+                        cur.execute("""SELECT id FROM Car 
+                                    WHERE car_vin = %s""",
+                                    (c_vin, ))
                         dataCar = cur.fetchone()
 
                         if dataCar:
-                            #if there is a car with the vin number update the person_id in Car table.
+                            """"if there is a car with the vin 
+                            number update the person_id in Car table."""
                             cur.execute("""UPDATE Car
                                         SET person_id = %s
                                         WHERE car_vin = %s""",
@@ -76,27 +103,35 @@ def new_client():
                             
                             cur.execute("""
                                     INSERT INTO Repair 
-                                    (id, date, description, status, car_id)
+                                    (id, date, description, status,car_id)
                                     VALUES
                                     (%s, %s, %s, %s, %s)""",
-                                    (str(uuid4()), now, c_desc, "0", dataCar[0]))
+                                    (str(uuid4()),
+                                     now,
+                                     c_desc,
+                                     "0",
+                                     dataCar[0]))
                         
                         else:
                             #if no vin number found (aka new car)
                             car_id = str(uuid4())
                             cur.execute("""
-                                    INSERT INTO Car
-                                    (id, brand, model, car_num, car_vin, description, person_id)
-                                    VALUES
-                                    (%s, %s, %s, %s, %s, %s, %s)""",
-                                    (car_id, c_brand, c_make, c_num, c_vin, " ", person_id))
+                INSERT INTO Car
+                (id, brand, model, car_num, car_vin,description,person_id)
+                VALUES
+                (%s, %s, %s, %s, %s, %s, %s)""",
+                (car_id, c_brand, c_make, c_num, c_vin, " ", person_id))
                         
                             cur.execute("""
                                     INSERT INTO Repair 
-                                    (id, date, description, status, car_id)
+                                    (id, date, description, status,car_id)
                                     VALUES
                                     (%s, %s, %s, %s, %s)""",
-                                    (str(uuid4()), now, c_desc, "0", car_id))
+                                    (str(uuid4()), 
+                                     now, 
+                                     c_desc, 
+                                     "0", 
+                                     car_id))
                         
                     except Exception as e:
                         flash('Kaut kas nogāja greizi.', category='error')
@@ -108,7 +143,8 @@ def new_client():
                 #no client found
                 try:
                     #check if there is a car in db with the vin number
-                    cur.execute("SELECT id FROM Car WHERE car_vin = %s", (c_vin, ))
+                    cur.execute("SELECT id FROM Car WHERE car_vin = %s", 
+                                (c_vin, ))
                     dataCar = cur.fetchone()
 
                     cur.execute("""
@@ -130,17 +166,21 @@ def new_client():
                                 (id, date, description, status, car_id)
                                 VALUES
                                 (%s, %s, %s, %s, %s)""",
-                                (str(uuid4()), now, c_desc, "0", dataCar[0]))
+                                (str(uuid4()), 
+                                 now, 
+                                 c_desc, 
+                                 "0", 
+                                 dataCar[0]))
                         
                     else:
                         #if no such vin is found (aka a new car)
                         car_id = str(uuid4())
                         cur.execute("""
-                                INSERT INTO Car
-                                (id, brand, model, car_num, car_vin, description, person_id)
-                                VALUES
-                                (%s, %s, %s, %s, %s, %s, %s)""",
-                                (car_id, c_brand, c_make, c_num, c_vin, " ", k_id))
+                INSERT INTO Car
+                (id, brand, model, car_num, car_vin,description,person_id)
+                VALUES
+                (%s, %s, %s, %s, %s, %s, %s)""",
+                (car_id, c_brand, c_make, c_num, c_vin, " ", k_id))
                     
                         cur.execute("""
                                 INSERT INTO Repair 
@@ -149,7 +189,8 @@ def new_client():
                                 (%s, %s, %s, %s, %s)""",
                                 (str(uuid4()), now, c_desc, "0", car_id))
                         
-                        flash('Klients veiksmīgi pievonts!', category='succes')
+                        flash('Klients veiksmīgi pievonts!',
+                              category='succes')
 
                 except Exception as e:
                     flash('Kaut kas nogāja greizi', category='error')
@@ -171,7 +212,8 @@ def new_client():
 @admin_login_required
 def all_users():
     # shows all users in the database
-    # Mapping form values to database column names (trying to prevent sql injections)
+    # Mapping form values to database column names 
+    #(trying to prevent sql injections)
     column_mapping = {
         "name": "Person.name",
         "surname": "Person.surname",
@@ -203,8 +245,11 @@ def all_users():
         conn, cur = startWorkDB()
 
         if search_field and search_value:
-            query = f"""SELECT Person.name, Person.surname, Person.email, Person.phone_number, 
-                       Car.brand, Car.model, Car.car_num, Car.car_vin, Car.id, Repair.date, Repair.status, Repair.description
+            query = f"""SELECT Person.name, Person.surname, 
+                        Person.email, Person.phone_number, 
+                        Car.brand, Car.model, Car.car_num, Car.car_vin,
+                        Car.id, Repair.date, Repair.status, 
+                        Repair.description
                        FROM Person 
                        INNER JOIN Car ON Person.id = Car.person_id
                        INNER JOIN Repair ON Car.id = Repair.car_id
@@ -213,8 +258,11 @@ def all_users():
             cur.execute(query, (f"%{search_value}%",))
 
         else:
-            query = """SELECT Person.name, Person.surname, Person.email, Person.phone_number, 
-                       Car.brand, Car.model, Car.car_num, Car.car_vin, Car.id, Repair.date, Repair.status, Repair.description 
+            query = """SELECT Person.name, Person.surname, 
+                        Person.email, Person.phone_number, 
+                       Car.brand, Car.model, Car.car_num, 
+                       Car.car_vin, Car.id, Repair.date, Repair.status, 
+                       Repair.description 
                        FROM Person 
                        INNER JOIN Car ON Person.id = Car.person_id
                        INNER JOIN Repair ON Car.id = Repair.car_id
@@ -235,7 +283,8 @@ def all_users():
 @views.route('/pending_page', methods=['GET'])
 @admin_login_required
 def pending_page():
-    # Mapping form values to database column names (trying to prevent sql injections)
+    # Mapping form values to database column names 
+    #(trying to prevent sql injections)
     column_mapping = {
         "name": "Person.name",
         "surname": "Person.surname",
@@ -252,8 +301,10 @@ def pending_page():
     search_value = request.args.get('search_value', None)
 
     # Initialize query and params
-    query = """SELECT Person.name, Person.surname, Person.email, Person.phone_number, 
-               Car.brand, Car.model, Car.car_num, Car.car_vin, Repair.id, Repair.date, Repair.status, Car.description
+    query = """SELECT Person.name, Person.surname, 
+                Person.email, Person.phone_number, 
+               Car.brand, Car.model, Car.car_num, Car.car_vin,
+               Repair.id, Repair.date, Repair.status, Car.description
                FROM Person 
                INNER JOIN Car ON Person.id = Car.person_id
                INNER JOIN Repair ON Car.id = Repair.car_id
@@ -320,14 +371,15 @@ def delete_car():
 @admin_login_required
 def update_car_status():
     """
-    Updates car status from false (work unfinished) to true (work finished).
+    Updates car status from false to true.
     This operation is triggered by a button click.
     """
     repair_id = request.form.get('car_id')
 
     try:
         conn, cur = startWorkDB()
-        cur.execute("UPDATE Repair SET status = true WHERE id = %s", (repair_id,))
+        cur.execute("UPDATE Repair SET status = true WHERE id = %s",
+                    (repair_id,))
         conn.commit()
 
     except Exception as e:
@@ -389,7 +441,8 @@ def notes(car_id):
         try:
             descr = sanitize_and_replace(request.form.get("description"))
             conn, cur = startWorkDB()
-            cur.execute("UPDATE Car SET description = %s WHERE id LIKE %s", (descr, car_id, ))
+            cur.execute("UPDATE Car SET description= %s WHERE id LIKE %s",
+                        (descr, car_id, ))
             flash("Ziņa veiksmīgi pievienota!", category='success')
         
         except Exception as e:
@@ -404,14 +457,17 @@ def notes(car_id):
     else:
         try:
             conn, cur = startWorkDB()
-            cur.execute("SELECT person_id FROM Car WHERE id = %s", (car_id,))
+            cur.execute("SELECT person_id FROM Car WHERE id = %s",
+                        (car_id,))
             carUser = cur.fetchone()
 
             if carUser[0] == session.get('user_id'):
                 
-                cur.execute("SELECT description FROM Car WHERE id = %s", (car_id,))
+                cur.execute("SELECT description FROM Car WHERE id = %s",
+                            (car_id,))
                 description = cur.fetchone()
-                return render_template("user_notes.html", description=description[0])
+                return render_template("user_notes.html",
+                                       description=description[0])
 
             else:
                 flash('Šī mašīna nepieder jums!', category='error')
@@ -434,9 +490,11 @@ def car_view(car_id):
     else:
         try:
             conn, cur = startWorkDB()
-            cur.execute("SELECT person_id FROM Car WHERE id = %s", (car_id, ))
+            cur.execute("SELECT person_id FROM Car WHERE id = %s",
+                        (car_id, ))
             carUser = cur.fetchone()
-            cur.execute("SELECT * FROM Reservation WHERE car_id = %s", (car_id, ))
+            cur.execute("SELECT * FROM Reservation WHERE car_id = %s",
+                        (car_id, ))
             checkReservation = cur.fetchall()
             cars = []
 
@@ -457,7 +515,9 @@ def car_view(car_id):
                 """, (car_id, ))
                 cars = cur.fetchall()
 
-                return render_template("car_view.html", cars = cars, car_id=car_id, checkReservation=checkReservation)
+                return render_template("car_view.html", cars = cars,
+                                       car_id=car_id,
+                                       checkReservation=checkReservation)
 
             else:
                 flash('Šī mašīna nepieder jums!', category='error')
@@ -484,9 +544,13 @@ def reservation(car_id):
             cur.execute("""INSERT INTO 
                         Reservation
                         (reservation_id, date, car_id, description)
-                        VALUES (%s, %s, %s, %s)""", (str(uuid4()), now, car_id, descr))
+                        VALUES (%s, %s, %s, %s)""", (str(uuid4()),
+                                                     now,
+                                                     car_id,
+                                                     descr))
             
-            flash('Jūsu pieprasījums ir saņemts! Uzgaidiet līdz mēs kontaktēsimies ar jums par ērtu laiku.', category='success')
+            flash('Jūsu pieprasījums ir saņemts! Uzgaidiet līdz mēs kontaktēsimies ar jums par ērtu laiku.',
+                  category='success')
             return redirect(url_for("views.user_home"))
         
         except Exception as e:
@@ -501,19 +565,23 @@ def reservation(car_id):
     else:
         try:
             conn, cur = startWorkDB()
-            cur.execute("SELECT person_id FROM Car WHERE id = %s", (car_id, ))
+            cur.execute("SELECT person_id FROM Car WHERE id = %s",
+                        (car_id, ))
             carUser = cur.fetchone()
 
             if carUser[0] == session.get('user_id'):
-                cur.execute("SELECT * FROM Reservation WHERE car_id = %s", (car_id, ))
+                cur.execute("SELECT * FROM Reservation WHERE car_id = %s",
+                            (car_id, ))
                 carResev = cur.fetchall()
 
                 if carResev:
-                    flash('Mašīnai ir aktīva rezervācija! Lūdzu pacietīgi uzgaidiet, kamēr mēs ar jums sazināsimies!', category='error')
+                    flash('Mašīnai ir aktīva rezervācija! Lūdzu pacietīgi uzgaidiet, kamēr mēs ar jums sazināsimies!',
+                          category='error')
                     return redirect(url_for("views.user_home"))
                 
                 else:
-                    return render_template("user_reservation.html", car_id = car_id)
+                    return render_template("user_reservation.html",
+                                           car_id = car_id)
 
         except Exception as e:
             writeToDoc(e)
@@ -529,11 +597,13 @@ def reservation(car_id):
 def reservation_cancel(car_id):
     try:
         conn, cur = startWorkDB()
-        cur.execute("SELECT person_id FROM Car WHERE id = %s", (car_id, ))
+        cur.execute("SELECT person_id FROM Car WHERE id = %s",
+                    (car_id, ))
         carUser = cur.fetchone()
 
         if carUser[0] == session.get('user_id'):
-            cur.execute("DELETE FROM Reservation WHERE car_id = %s", (car_id, ))
+            cur.execute("DELETE FROM Reservation WHERE car_id = %s",
+                        (car_id, ))
 
     except Exception as e:
         writeToDoc(e)
@@ -566,7 +636,8 @@ def view_reservations():
                     ORDER BY
                         Reservation.date DESC;""")
         reservationData = cur.fetchall()
-        return render_template("view_reservations.html", reservationData=reservationData)
+        return render_template("view_reservations.html",
+                               reservationData=reservationData)
     
     except Exception as e:
         writeToDoc(e)
@@ -583,7 +654,8 @@ def delete_reservation():
     reservation_id = request.form.get('reservation_id')
     try:
         conn, cur = startWorkDB()
-        cur.execute("DELETE FROM Reservation WHERE reservation_id = %s", (reservation_id, ))
+        cur.execute("DELETE FROM Reservation WHERE reservation_id = %s",
+                    (reservation_id, ))
         flash('Ieraksts veiksmīgi dzēsts!', category='success')
     
     except Exception as e:
@@ -597,6 +669,6 @@ def delete_reservation():
 @views.after_request
 def apply_caching(response):
     # me trying to stop XSS (i dont know what im doing)
-    response.headers["X-Content-Type-Options"] = "nosniff" # Yeah! Dont sniff. Thats weird
+    response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     return response
